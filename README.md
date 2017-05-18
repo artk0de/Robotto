@@ -20,6 +20,7 @@
 * Production / Developer modes
 * Configs
 * Logger
+* i18n support
 
 # Getting started
 ## Before install
