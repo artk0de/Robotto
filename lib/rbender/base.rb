@@ -24,7 +24,6 @@ class RBender::Base
   end
 
   # Runs the bot with server
-  public
   def run!
     puts "Bot is loading...".green
     puts "Bot is running...".green
@@ -44,7 +43,6 @@ class RBender::Base
     end
   end
 
-  public
   def _process_message(message)
     chat_id = message.from.id # Unique chat ID
 
@@ -150,7 +148,6 @@ class RBender::Base
   # @param [String] state_name - name of the state
   # @param [Block] block - actions while state has invoked
   #
-  public
   def state(state_name, &block)
     unless @states.has_key? state_name
       @states[state_name] = block
