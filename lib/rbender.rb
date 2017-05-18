@@ -1,4 +1,4 @@
-require 'bender_bot/base'
+require 'rbender/base'
 require 'colorize'
 
 module RBender
