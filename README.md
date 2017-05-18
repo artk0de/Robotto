@@ -23,7 +23,7 @@ v 0.3.0
 
 # Getting started
 ## Before install
-To use this framework you need MongoDB install. Please [visit MongoDB website](https://docs.mongodb.com/manual/installation/) for more information.
+To use this framework you need MongoDB installed. Please [visit MongoDB website](https://docs.mongodb.com/manual/installation/) for more information.
 
 ## Install
 ```bash
