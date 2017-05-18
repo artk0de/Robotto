@@ -1,7 +1,7 @@
-![](https://github.com/art2rik/rbender/blob/master/img/rbender.png "Logo")
 # RBender [![Code Climate](https://codeclimate.com/github/art2rik/rbender/badges/gpa.svg)](https://codeclimate.com/github/art2rik/rbender)
 **RBender** is a DSL-specified framework to create bots on different platforms (now Telegram only supported). Framework are developed to be maximally comfortable and intuitive for developers and proposes ultimate tools for bot creation.
 
+![](https://github.com/art2rik/rbender/blob/master/img/rbender.png "Logo")
 ## Current version
 v 0.3.0
 
