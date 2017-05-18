@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+# require 'rbender'
+
+
+if ARGV.any?
+
+	require 'optparse'
+	OptionParser.new do |op|
+		op.on("new NAME", 'creates new bot\'s environment') do |name|
+			puts name.to_s
+			puts 'here'
+		end
+	end.parse!(ARGV.dup)
+end
+
