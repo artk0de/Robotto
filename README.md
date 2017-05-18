@@ -40,7 +40,7 @@ gem install rbender
 *To be filled.*
 
 # RBender based projects
-*RBender* widely used for e-commerce bot creation. There are at least one professional team, which successful integrated *RBender* into their work and uses the framework to create commercial bots ([Anybots team](https://t.me/anybots), contact: [@spiritized](https://telegram.me/spiritized)). Also, *RBender* using for [inner-communication bots inside Innopolis city (Russia)](https://hightech.fm/2017/04/01/innopolis_bots).
+*RBender* widely used for e-commerce bot creation. There are at least one professional team, which successful integrated *RBender* into their work and uses the framework to create commercial bots ([Anybots team](https://t.me/anybots), Telegram: [@spiritized](https://telegram.me/spiritized)). Also, *RBender* using for [inner-communication bots inside Innopolis city (Russia)](https://hightech.fm/2017/04/01/innopolis_bots).
 ## Bot examples
 * [@HighTechFmBot](https://telegram.me/HighTechFmBot): [HighTech.FM](https://hightech.fm) media journal bot
 * [@FintechRankingbot](https://telegram.me/FintechRankingbot): [FintechRanking](https://inspirasia.org) news bot
