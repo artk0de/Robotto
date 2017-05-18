@@ -8,7 +8,7 @@
 ## Features
 * Domain Specific Language based
 * FSM (Final State Automata) model
-* Encapsulated code
+* Encapsulate your code
 * Simple, clear and powerfull
 * Supports Telegram
 * Sessions
