@@ -34,6 +34,12 @@ gem install rbender
 ## Create your first bot
 
 # Documentation
+# RBender based projects
+*RBender* widely used for e-commerce bot creation. There are at least one professional team, which successful integrated *RBender* into their work and uses the framework to create commercial bots (Anybots team, Telegram: [@spiritized](https://telegram.me/spiritized)). Also, *RBender* using for [inner-communication bots inside Innopolis city](inner-communication bots).
+## Bot examples
+*[@HighTechFmBot](https://telegram.me/HighTechFmBot): Media journal bot
+*[@FintechRankingbot](https://telegram.me/FintechRankingbot): Asian Fintech news
+*[@icecakemoscowbot](https://telegram.me/icecakemoscowbot): Food delievery bot
 
 # Badge for developers
 ![](https://github.com/art2rik/rbender/blob/master/img/madewithrbender.png "Stamp")
