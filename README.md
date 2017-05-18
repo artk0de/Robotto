@@ -6,10 +6,24 @@
 v 0.3.0
 
 ## Features
+* Domain Specific Language based
+* FSM (Final State Automata) model
+* Encapsulated code
+* Simple, clear and powerfull
+* Supports Telegram
+* Sessions
+* Uses MongoDB
 
-## Last changes
+## Planned features
+* Launcher
+* Source templates
+* Production / Developer modes
+* Configs
+* Logger
 
 # Getting started
+## Before install
+To use this framework you need MongoDB install. Please [visit MongoDB website](https://docs.mongodb.com/manual/installation/) for more information.
 
 ## Install
 ```bash
