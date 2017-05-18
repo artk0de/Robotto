@@ -2,8 +2,8 @@
 **RBender** is a DSL-specified framework to create bots on different platforms (now Telegram only supported). Framework are developed to be maximally comfortable and intuitive for developers and proposes ultimate tools for bot creation.
 
 ![](https://github.com/art2rik/rbender/blob/master/img/rbender.png "Logo")
-## Current version
-*v0.3.0*
+## Current gem version
+[![Gem Version](https://badge.fury.io/rb/rbender.svg)](https://badge.fury.io/rb/rbender)
 
 ## Features
 * Domain Specific Language based
