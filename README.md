@@ -3,7 +3,7 @@
 
 ![](https://github.com/art2rik/rbender/blob/master/img/rbender.png "Logo")
 ## Current version
-**v0.3.0**
+*v0.3.0*
 
 ## Features
 * Domain Specific Language based
