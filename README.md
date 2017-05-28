@@ -7,18 +7,14 @@
 
 ## Features
 * Domain Specific Language based
-* FSM (Final State Automata) model
-* Encapsulate your code
+* FSM (Final State Machine) model
+* Logically encapsulated codee
 * Simple, clear and powerfull
 * Supports Telegram
-* Sessions
-* Uses MongoDB
+* WEB-like sessions
 
-## Planned features
-* Launcher
-* Source templates
-* Production / Developer modes
-* Configs
+
+## Future features
 * Logger
 * i18n support
 
@@ -31,7 +27,40 @@ To use this framework you need MongoDB installed. Please [visit MongoDB website]
 gem install rbender
 ```
 ## FSM intro
-*To be filled.*
+
+The *Rbender* framework based on [Final State Machine](https://en.wikipedia.org/wiki/Finite-state_machine) model. Every state a represents one pice of actions, which user could do while in state. The main idea of *RBender* are describing states and their's inner structure.
+
+Every state can include:
+* Keyboard
+* One or more inline keyboards
+* Text/Audio/Video hooks
+* Before/After hooks
+* Helper methods
+
+The first state where user should be after '/start' command is **start** state.
+
+
+For example, this code redirects user to **:state_1** after *:start* state code has been executed.
+```ruby
+state :start do
+  after do
+    switch(:state_1)
+  end
+end
+
+state :state_1 do
+  # ...
+  # some code
+  # ...
+end
+```
+User's state before execution:
+![](https://github.com/art2rik/rbender/blob/master/img/fsm_1.png "Stamp")
+
+User's state after execution:
+![](https://github.com/art2rik/rbender/blob/master/img/fsm_2.png "Stamp")
+
+Beside this, there are can be **global** state where you can define helper methods and command hooks.
 
 ## Create your first bot
 *To be filled.*
