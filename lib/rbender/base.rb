@@ -14,6 +14,8 @@ class RBender::Base
   attr_accessor :api
   include RBender::SessionManager
 
+  public
+
   def initialize
     @states = {}
     @global_state = nil
@@ -25,7 +27,6 @@ class RBender::Base
   end
 
   # Runs the bot with server
-  public
   def run!
     puts "Bot is loading...".green
     puts "Bot is running...".green
@@ -45,7 +46,7 @@ class RBender::Base
     end
   end
 
-  public
+
   def process_message(message)
     chat_id = message.from.id # Unique chat ID
 
@@ -128,11 +129,9 @@ class RBender::Base
   # @param [Hash] params - hash with params
   #
   # Available parameters:
-  # * mongo_server_ip (required)
-  # * mongo server_port  (required)
-  # * bot_name (required)
-  # * token (required)
-  # * localizations(optional) default = :default
+  # * mongo (required) connection string
+  # * bot_name (required) name of bot
+  # * token (required) token
   def set_params(params)
     RBender::MongoClient.setup(params['title'], params['mongo'])
 
@@ -149,7 +148,6 @@ class RBender::Base
   # @param [String] state_name - name of the state
   # @param [Block] block - actions while state has invoked
   #
-  public
   def state(state_name, &block)
     unless @states.has_key? state_name
       @states[state_name] = block
