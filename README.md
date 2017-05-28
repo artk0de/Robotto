@@ -33,7 +33,7 @@ The *Rbender* framework based on [Final State Machine](https://en.wikipedia.org/
 Every state can include:
 * Keyboard
 * One or more inline keyboards
-* Text/Audio/Video hooks
+* Text/Audio/Video/other hooks
 * Before/After hooks
 * Helper methods
 
@@ -67,15 +67,13 @@ Beside this, there are can be **global** state where you can define helper metho
 
 # Create your first bot
 ## States
-### Start state
-### Other states
-### Global state
 ## Hooks
 ### Before/After
 ### Typed hooks
 ### Commands hook
 ## Keyboard
 ## Inline keyboards
+## Sessions
 ## API methods
 ## Helpers
 ## Example
