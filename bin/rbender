@@ -1,15 +1,121 @@
 #!/usr/bin/env ruby
-# require 'rbender'
+require 'rbender'
+require 'ostruct'
+require 'optparse'
+require 'fileutils'
 
+class OptParser
 
-if ARGV.any?
+	MODE_DEV  = "dev"
+	MODE_PROD = "prod"
 
-	require 'optparse'
-	OptionParser.new do |op|
-		op.on("new NAME", 'creates new bot\'s environment') do |name|
-			puts name.to_s
-			puts 'here'
+	def self.parse(args)
+		options       = OpenStruct.new
+		options.mode  = "dev"
+		options.name  = "prod"
+		options.start = false
+
+		global = OptionParser.new do |opts|
+			opts.banner = "Usage: rbender [options]"
+
+			opts.separator ""
+			opts.separator "Common options:"
+			opts.on_tail("-v", "--version", "Prints current RBender version") do
+				puts "RBender version: #{RBender::VERSION}"
+				puts "by art2rik (https://github.com/art2rik)"
+			end
+
+			opts.on("-m", "--mode [MODE]", [MODE_DEV, MODE_PROD],
+							"Sets running mode (default 'dev')") do |mode|
+				options.mode = mode
+				unless mode != MODE_DEV or mode != MODE_PROD
+					raise ArgumentError, "Available modes are dev/prod"
+				end
+			end
+
+			opts.on_tail("-h", "--help", "Shows help message") do
+				puts opts
+				exit
+			end
+
 		end
-	end.parse!(ARGV.dup)
+
+		global.order!
+		# subcommands[args.shift].order!
+
+		global.parse! args
+
+		options
+	end
+
 end
+
+def create_project(options, args)
+	unless args[0] =~ /\w{3,16}/ and args[1] == nil
+		raise ArgumentError, "Name must be from 3 to 16 english letters without spaces"
+	end
+	name = args[0]
+	name_undrscr = RBender::ConfigHandler.underscore(name)
+	begin
+	FileUtils.mkdir name
+	rescue
+		puts "Folder #{name} already exists"
+		exit
+	end
+
+	project_dir = "#{Dir.getwd}/#{name}"
+	FileUtils.chdir name
+	FileUtils.mkdir "locales"
+	FileUtils.mkdir "lib"
+
+	FileUtils.chdir __dir__
+	FileUtils.chdir "../templates"
+	FileUtils.cp_r "locales", project_dir
+	FileUtils.cp_r "config.yaml", project_dir
+	FileUtils.cp_r "sample.rb", "#{project_dir}/#{name_undrscr}.rb"
+
+	#TODO: change name in config
+
+	config = RBender::ConfigHandler.settings
+	config['title'] = name
+	config.save
+
+	puts "Project #{name} successfully created"
+
+end
+
+def run(options, args)
+		begin
+		settings = RBender::ConfigHandler.settings
+		rescue
+			puts 'Main file or config are missing!'
+		end
+		title = RBender::ConfigHandler.underscore(settings['title'])
+		load "#{Dir.pwd}/#{title}.rb"
+		bot_frame = RBender.instance
+		#TODO: add mode setting
+		bot_frame.set_params(settings)
+		bot_frame.run!
+end
+
+# --- EXECUTE CODE ______
+begin
+	options = OptParser.parse(ARGV.dup)
+	command = ARGV.shift
+
+	case command
+		when 'new'
+			create_project(options, ARGV.dup)
+		when "start"
+			run(options, ARGV.dup)
+	end
+rescue ArgumentError => e
+	puts "Wrong argument: #{e}"
+	puts "Try 'help' command"
+end
+
+
+
+
+
 

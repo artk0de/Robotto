@@ -5,6 +5,7 @@ require 'rbender/sessionmanager'
 require 'rbender/keyboard_inline'
 require 'rbender/mongo_client'
 require 'rbender/state'
+require 'rbender/config_handler'
 
 require 'telegram/bot'
 
@@ -35,17 +36,17 @@ class RBender::Base
         instance_exec(@api, @mongo_client, &@modules_block)
       end
       bot.listen do |message| # When message has gotten
-        # begin
-          _process_message(message)
-        # rescue => ex
-        #   puts ex.message
-        # end
+        begin
+          process_message(message)
+        rescue => ex
+          puts ex.message
+        end
       end
     end
   end
 
   public
-  def _process_message(message)
+  def process_message(message)
     chat_id = message.from.id # Unique chat ID
 
     if has_session?(chat_id)
@@ -133,13 +134,11 @@ class RBender::Base
   # * token (required)
   # * localizations(optional) default = :default
   def set_params(params)
-    RBender::MongoClient.setup(params[:bot_name],
-                               params[:mongo_server_ip],
-                               params[:mongo_server_port])
+    RBender::MongoClient.setup(params['title'], params['mongo'])
 
     session_setup(RBender::MongoClient.client)
 
-    @token = params[:token]
+    @token = params['development']['token']
     # if params.has_key? localizations
     #
     # end

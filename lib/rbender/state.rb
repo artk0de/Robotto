@@ -1,5 +1,3 @@
-require_relative '../r_bender'
-
 class RBender::State
   def initialize(message, api, session, &state_block)
     @message = message

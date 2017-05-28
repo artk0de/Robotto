@@ -4,8 +4,7 @@ require "rbender"
 require_relative 'ciprschedule'
 # token = '213106430:AAHRqB1O4eZLeMMDbNLyVjc0_ZtGziDopV8'
 
-params({mongo_server_ip: 'localhost',
-            mongo_server_port: 27017,
+params({mongo: 'mongo://localhost',
             bot_name: "CiprBot",
             token: token})
 

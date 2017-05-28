@@ -10,15 +10,13 @@ class RBender::MongoClient
     instance.mongo_client
   end
 
-  def self.setup(bot_name, mongo_server_ip, mongo_server_port)
-    instance.setup(bot_name, mongo_server_ip, mongo_server_port)
+  def self.setup(bot_name, mongo_string)
+    instance.setup(bot_name, mongo_string)
   end
 
-  def setup(bot_name, mongo_server_ip, mongo_server_port)
+  def setup(bot_name, mongo_string)
     @bot_name = bot_name
-    @mongo_server_ip = mongo_server_ip
-    @mongo_server_port = mongo_server_port
-    @mongo_client = Mongo::Client.new(["#{mongo_server_ip}:#{mongo_server_port}"], :database => bot_name)
+    @mongo_client = Mongo::Client.new(mongo_string, :database => bot_name)
 
     Mongo::Logger.logger.level = ::Logger::FATAL
   end

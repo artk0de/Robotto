@@ -1,0 +1,9 @@
+---
+title: FooBot
+mongo: mongodb://localhost:27017
+development:
+  token: smaple token
+  log_error: true
+  log_user: false
+production:
+  token: sample token
