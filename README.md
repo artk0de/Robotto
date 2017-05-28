@@ -28,7 +28,7 @@ gem install rbender
 ```
 ## FSM intro
 
-The *Rbender* framework based on [Final State Machine](https://en.wikipedia.org/wiki/Finite-state_machine) model. Every state a represents one pice of actions, which user could do while in state. The main idea of *RBender* are describing states and their's inner structure.
+The *Rbender* framework based on [Final State Machine](https://en.wikipedia.org/wiki/Finite-state_machine) model. Every state a represents one set of actions, which user could do while in state. The main idea of *RBender* are describing states and their's inner structure.
 
 Every state can include:
 * Keyboard
@@ -55,10 +55,10 @@ state :state_1 do
 end
 ```
 User's state before execution:
-![](https://github.com/art2rik/rbender/blob/master/img/fsm_1.png "Stamp")
+![](https://github.com/art2rik/rbender/blob/master/img/fsm1.png "Before")
 
 User's state after execution:
-![](https://github.com/art2rik/rbender/blob/master/img/fsm_2.png "Stamp")
+![](https://github.com/art2rik/rbender/blob/master/img/fsm2.png "After")
 
 Beside this, there are can be **global** state where you can define helper methods and command hooks.
 
