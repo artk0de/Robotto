@@ -55,9 +55,11 @@ state :state_1 do
 end
 ```
 User's state before execution:
+
 ![](https://github.com/art2rik/rbender/blob/master/img/fsm1.png "Before")
 
 User's state after execution:
+
 ![](https://github.com/art2rik/rbender/blob/master/img/fsm2.png "After")
 
 Beside this, there are can be **global** state where you can define helper methods and command hooks.
