@@ -45,6 +45,7 @@ For example, this code redirects user to **:state_1** after *:start* state code 
 state :start do
   after do
     switch(:state_1)
+    # used to change states
   end
 end
 
@@ -64,11 +65,23 @@ User's state after execution:
 
 Beside this, there are can be **global** state where you can define helper methods and command hooks.
 
-## Create your first bot
-*To be filled.*
+# Create your first bot
+## States
+### Start state
+### Other states
+### Global state
+## Hooks
+### Before/After
+### Typed hooks
+### Commands hook
+## Keyboard
+## Inline keyboards
+## API methods
+## Helpers
+## Example
 
 # Documentation
-*To be filled.*
+For detailed documentation [please visit our wiki](https://github.com/art2rik/RBender/wiki).
 
 # RBender based projects
 *RBender* widely used for e-commerce bot creation. There are at least one professional team, which successful integrated *RBender* into their work and uses the framework to create commercial bots ([Anybots team](https://t.me/anybots), Telegram: [@spiritized](https://telegram.me/spiritized)). Also, *RBender* is used for [inner-communication bots inside Innopolis city (Russia)](https://hightech.fm/2017/04/01/innopolis_bots).
@@ -77,5 +90,5 @@ Beside this, there are can be **global** state where you can define helper metho
 * [@FintechRankingbot](https://telegram.me/FintechRankingbot): [FintechRanking](https://fintechranking.com) news bot
 * [@icecakemoscowbot](https://telegram.me/icecakemoscowbot): Food delievery bot
 
-# Badge for developers
+## Badge for developers
 ![](https://github.com/art2rik/rbender/blob/master/img/madewithrbender.png "Stamp")
