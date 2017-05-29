@@ -24,7 +24,20 @@ To use this framework you need MongoDB installed. Please [visit MongoDB website]
 
 ## Install
 ```bash
-gem install rbender
+~ $ gem install rbender
+```
+
+## Usage
+
+To create new project type in terminal:
+```bash
+~ $ rbender new DemoBot
+```
+Then new project with templates will be created. 
+To run your bot execute following command from your project directory:
+
+```bash
+~/DemoBot $ rbender start
 ```
 ## FSM intro
 
