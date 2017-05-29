@@ -17,6 +17,9 @@
 ## Future features
 * Logger
 * i18n support
+* Inline API support
+* Game API support
+* Payment support
 
 # Getting started
 ## Before install
