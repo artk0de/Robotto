@@ -34,9 +34,10 @@ To create new project type in terminal:
 ~$ rbender new DemoBot
 ```
 Then new project with templates will be created. 
-To run your bot execute following command from your project directory:
 
+To run your bot:
 ```bash
+~$ cd DemoBot
 ~/DemoBot$ rbender start
 ```
 ## FSM intro
