@@ -82,7 +82,6 @@ User's state after execution:
 
 Beside this, there are can be **global** state where you can define helper methods and command hooks.
 
-# Create your first bot
 ## States
 States are main logical part of bot. 
 States could be described as follow by using **state** keyword:
@@ -266,6 +265,20 @@ Futhermore, you can contain your own values inside **session** variable to store
     end  
   end
 ```
+## Modules
+Likely, you may want to expand your bot functionality by additional functionality modules. You can use *telegram api driver* and *mongodb driver* to use it in your own classes or modules. 
+
+How to do it:
+```ruby
+modules do |api, mongo|
+YourModule.set_api(api)
+YourModule.set_mongo(mongo)
+end
+```
+RBender use [telegram-bot-ruby](https://github.com/atipugin/telegram-bot-ruby) api driver and [MongoDB ruby](https://github.com/mongodb/mongo-ruby-driver) driver. Also you can get access to MongoDB driver like this:
+```ruby
+RBender::MongoClient.client
+```
 ## Methods
 ### RBender methods
 #### General methods
@@ -302,14 +315,28 @@ Futhermore, you can contain your own values inside **session** variable to store
 |switch_prev| – | Returns to previous state |
 |inline_markup| **keyboard_id** *Symbol* id of required keyboard | Returns inline markup object
 |session| – | Return user's session
-|message| - | Returns last (usually actual) message
+|message| - | Returns last (usually actual) message object
 
 #### Keyboard
 #### Inline keyboard
 
 
 ### API methods
-
+ RBender supports all avalaible [Telegram Bot API methods](https://core.telegram.org/bots/api#available-methods). 
+ But there are some litlle differences:
+ * There are not necessary to specify user_id, you're always work with concrette user
+ * Use *snake_case* instead CamelCase
+ 
+ ```ruby
+ state :state_main do
+  before do
+    send_message(text: "Some useless words")
+    send_message(chat_id: session[:chat_id],
+                 text: "Another useless text")
+    # Both (!!!) messages will be delievered to the same user
+  end
+ end
+ ```
 ## Helpers
 Inside *helpers* block you could define helper methods inside your states.
 
