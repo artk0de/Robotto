@@ -203,7 +203,40 @@ end
 ```
 
 ## Inline keyboards
+
+Inline Keyboards are similar to common keyboard, but it's must be attached to message. 
+
+There are three button types in inline mode:
+* Button – classic button with callback
+* Link button – button with URL
+* Inline switch button – switch to inline mode
+
+```ruby
+state :state_main do
+  before do
+    # Invoke inline keyboard
+    send_message(text: "This is inline keyboard under this message",
+                 reply_markup: inline_markup(:kb_sample))
+  end
+  
+  keyboard_inline :kb_sample do
+    button :btn_hello, "Hi!" do
+      # Action callback
+      edit_message(text: "Hello!")
+    end
+    
+    button_link(:btn_url, 
+                "RBender homepage",
+                https://github.com/art2rik/RBender)
+                
+    add_line :btn_hello
+    add_line :btn_url
+  end
+end
+```
+
 ## Sessions
+
 ## API methods
 ## Helpers
 ## Example
