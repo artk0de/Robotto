@@ -67,11 +67,124 @@ Beside this, there are can be **global** state where you can define helper metho
 
 # Create your first bot
 ## States
+States are main logical part of bot. 
+States could be described as follow by using **state** keyword:
+```ruby
+state :start do
+ # do some code
+end
+
+state :state_first do
+  # do some code
+end
+
+state :state_second do
+  # do some code
+end
+
+global do
+  # do some code
+end
+```
+
+**:start** state is required and is a main entry point.
+
+**Global** state helps developers to define global inline keyboards, helpers and commands.
+
 ## Hooks
-### Before/After
+Hooks are callbacks which execututes when user sends to bot some different type messages like text/audio/video.
+
 ### Typed hooks
+```ruby
+state :state_main do
+  text do
+    # execetues when user sends text message
+  end
+  
+  image do
+    # executes when user sends picture
+  end
+  
+  video do
+    # executes when user sends video
+  end
+end
+```
+Available typed hooks:
+* text
+* audio
+* video
+* voice
+* document
+* location
+* contact
+* animation
+* sticker
+* chat
+
+### Before/After
+**Before** hook executes immediatly when user before state has changed.
+
+**After** hook executes after state has changed
+
+```ruby
+state :state_one do
+  text do
+   switch(:state_second) if message == 'switch'
+  end
+  
+  after do
+    # executes before switch happens
+  end
+end
+
+state :state_second do
+  before do
+    # executes when state will be :state_second 
+  end
+end
+```
+
 ### Commands hook
+Commands are messages begins with '/' symbol. Commands are availble from all states to user and should be described as follows
+```ruby
+global do
+  command '/about' do
+    send_message(text: "by Arthur Korochansky @art2rik")
+  end
+  
+  command '/with_params' do |params|
+    # f.e. if command was /with_params 1 one odin
+    # params = [1, 'one', 'odin']
+  end
+end
+```
 ## Keyboard
+Every keyboard are assigned to single state and executes at the same time as state has changed.
+```ruby
+state :state_main do
+  keyboard_response = "This is a keyboard"
+  keyboard keyboard_response do
+    button :btn_one, "One" do
+      # action callback
+    end
+    
+    button :btn_two, "Two" do
+      # action callback
+    end
+    
+    button :btn_third, "Thrid" do
+      # action callback
+    end
+    
+    add_line(:btn_one, :btn_two) # put "one" and "two" buttons in first line
+    add_line(:btn_third) # put "third" button in second line
+    resize() # auto resize button
+    one_time() # hide keyboard after use    
+  end
+end
+```
+
 ## Inline keyboards
 ## Sessions
 ## API methods
