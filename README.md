@@ -268,7 +268,48 @@ Futhermore, you can contain your own values inside **session** variable to store
 ```
 ## Methods
 ### RBender methods
+#### General methods
+| Method name| Arguements | Description|
+|------------|------------|------------|
+|state| **state_id** * *Symbol/String* id of a state <br> **&block** state block | Defines state |
+|global| **&block** global state code block  | Defines global state|
+|modules| — | Defines additional bot modules <br> *(Returns additional parameters api_driver and mongodb_driver)*|
+
+#### In-state methods
+| Method name| Arguements | Description|
+|------------|------------|------------|
+|keyboard| **kb_response** *String* message displayed to user when keyboard has showed <br> **&block** keyboard code block| Defines keyboard |
+|keyboard_inline| **keyboard_id** *Symbol/String* inline keyboard id <br> **&block** keyboard code block | Defines inline keyboard |
+|after| **&block** hook block code | Hook invoked after state are changed |
+|before| **&block** hook block code | Hook invoked before over hooks are executed  |
+|text| **&block** hook block code | Hook invoked on text messages |
+|audio| **&block** hook block code | Hook invoked on audio messages |
+|video| **&block** hook block code | Hook invoked on video messages |
+|voice| **&block** hook block code | Hook invoked on voice messages |
+|document| **&block** hook block code | Hook invoked on document messages |
+|location| **&block** hook block code | Hook invoked on location messages |
+|contact| **&block** hook block code | Hook invoked on contact messages |
+|animation| **&block** hook block code | Hook invoked on animation messages |
+|sticker| **&block** hook block code | Hook invoked on sticker messages |
+|chat| **&block** hook block code | Hook invoked on messages with chats |
+|command| **command** command name <br> **&block** action callback| Defines global commands <br> *(global state only)*
+|helpers| **&block** block with defined helper methods | Defines helpers 
+
+#### Hooks/callbacks
+| Method name| Arguements | Description|
+|------------|------------|------------|
+|switch| **state_id** *Symbol* id of needed state | Changes state of user |
+|switch_prev| – | Returns to previous state |
+|inline_markup| **keyboard_id** *Symbol* id of required keyboard | Returns inline markup object
+|session| – | Return user's session
+|message| - | Returns last (usually actual) message
+
+#### Keyboard
+#### Inline keyboard
+
+
 ### API methods
+
 ## Helpers
 Inside *helpers* block you could define helper methods inside your states.
 
@@ -286,8 +327,8 @@ state :state_main do
       global_helper_method()
     end
     
-    add_line :btn_local
-    add_line :btn_global
+    add_line(:btn_local)
+    add_line(:btn_global)
   end
   
   helpers do 
