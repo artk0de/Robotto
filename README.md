@@ -180,14 +180,17 @@ state :state_main do
   keyboard_response = "This is a keyboard"
   keyboard keyboard_response do
     button :btn_one, "One" do
+      set_response("You've pressed ONE") # change keyboard response to user
       # action callback
     end
     
     button :btn_two, "Two" do
+    set_response("You've pressed TWO")
       # action callback
     end
     
     button :btn_third, "Thrid" do
+      set_response("You've pressed THIRD")
       # action callback
     end
     
