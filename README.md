@@ -269,14 +269,14 @@ Futhermore, you can contain your own values inside **session** variable to store
 ## Methods
 ### RBender methods
 #### General methods
-| Method name| Arguements | Description|
+| Method name| Arguments | Description|
 |------------|------------|------------|
 |state| **state_id** * *Symbol/String* id of a state <br> **&block** state block | Defines state |
 |global| **&block** global state code block  | Defines global state|
 |modules| — | Defines additional bot modules <br> *(Returns additional parameters api_driver and mongodb_driver)*|
 
 #### In-state methods
-| Method name| Arguements | Description|
+| Method name| Arguments | Description|
 |------------|------------|------------|
 |keyboard| **kb_response** *String* message displayed to user when keyboard has showed <br> **&block** keyboard code block| Defines keyboard |
 |keyboard_inline| **keyboard_id** *Symbol/String* inline keyboard id <br> **&block** keyboard code block | Defines inline keyboard |
@@ -292,11 +292,11 @@ Futhermore, you can contain your own values inside **session** variable to store
 |animation| **&block** hook block code | Hook invoked on animation messages |
 |sticker| **&block** hook block code | Hook invoked on sticker messages |
 |chat| **&block** hook block code | Hook invoked on messages with chats |
-|command| **command** command name <br> **&block** action callback| Defines global commands <br> *(global state only)*
+|command| **command** command name <br> **&block** action callback| Defines global commands <bt> Throws *params* argument <br> *(global state only)* |
 |helpers| **&block** block with defined helper methods | Defines helpers 
 
 #### Hooks/callbacks
-| Method name| Arguements | Description|
+| Method name| Arguments | Description|
 |------------|------------|------------|
 |switch| **state_id** *Symbol* id of needed state | Changes state of user |
 |switch_prev| – | Returns to previous state |
@@ -347,7 +347,7 @@ global do
   end
 end
 ```
-## Example
+## Examples
 
 # Documentation
 For detailed documentation [please visit our wiki](https://github.com/art2rik/RBender/wiki).
