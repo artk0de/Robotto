@@ -229,16 +229,80 @@ state :state_main do
                 "RBender homepage",
                 https://github.com/art2rik/RBender)
                 
-    add_line :btn_hello
-    add_line :btn_url
+    add_line(:btn_hello)
+    add_line(:btn_url)
   end
 end
 ```
 
 ## Sessions
+Sessions are special structure which stores different user's information. 
 
-## API methods
+You could find out following data in the sessions:
+```ruby
+session[:state] # Current user's state
+session[:lang] # Current user's language
+session[:user][:chat_id] # User's chat id
+session[:user][:user_name] # Telegram alias if available
+session[:user][:first_name] 
+session[:user][:last_name] # If available
+```
+
+Futhermore, you can contain your own values inside **session** variable to store parameters and other user's data, but keys above are reserved (also *:state_stack*, *:keyboard_switchers*, *:keyboard_switch_groups* are reserved too).
+
+```ruby
+  state :state_main do
+    before do
+      # Init new user's session parameter
+      session[:notes] = [] 
+    end
+    
+    text do
+      # Add user's message to saved notes
+      session[:notes].push(message.text)
+    end  
+  end
+```
+## Methods
+### RBender methods
+### API methods
 ## Helpers
+Inside *helpers* block you could define helper methods inside your states.
+
+```ruby
+
+# You could define helpers visible inside a state only
+state :state_main do
+  kb_response = "Press any button"
+  keyboard kb_response do
+    button :btn_local, "Local helper" do
+      local_helper_method()
+    end
+    
+    button :btn_global, "Global helper" do
+      global_helper_method()
+    end
+    
+    add_line :btn_local
+    add_line :btn_global
+  end
+  
+  helpers do 
+    def local_helper_method
+      send_message(text: "Local helper method has been invoked")
+    end
+  end
+end
+
+# Or you could define global helper
+global do
+  helpers do
+    def global_helper_method 
+      send_message(text: "Global helper method has been invoked")
+    end
+  end
+end
+```
 ## Example
 
 # Documentation
