@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'rbender'
   s.version     = '0.4.6'
-  s.date        = '2017-05-18'
+  s.date        = '2017-05-31'
   s.description = 'Gem provides domain specific language for messengers bot creation.'
   s.authors     = %w(Arthur Korochansky)
   s.email       = "art2rik.desperado@gmail.com"
@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
 									 "lib/rbender/config_handler.rb",
 									 "templates/locales/en.yaml",
 									 "templates/config.yaml",
-									 "templates/sample.rb"]
+									 "templates/sample.rb",
+									 "templates/Gemfile"]
   s.executables << "rbender"
 end

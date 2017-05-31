@@ -72,6 +72,7 @@ def create_project(options, args)
 	FileUtils.chdir "../templates"
 	FileUtils.cp_r "locales", project_dir
 	FileUtils.cp_r "config.yaml", project_dir
+	FileUtils.cp_r "Gemfile", project_dir
 	FileUtils.cp_r "sample.rb", "#{project_dir}/#{name_undrscr}.rb"
 
 	#TODO: change name in config

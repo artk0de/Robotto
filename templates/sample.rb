@@ -33,13 +33,12 @@ state :start do
 end
 
 global do
-	commands do |command|
-		case command
-			when '/command1'
-				break
-			when '/command2'
-				break
-		end
+	command '/command' do
+		# command without params
+	end
+
+	command '/command2' do |params|
+		# command with params
 	end
 
 	helpers do
