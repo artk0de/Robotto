@@ -47,6 +47,43 @@ class RBender::Base
   end
 
 
+  # @param [Hash] params - hash with params
+  #
+  # Available parameters:
+  # * mongo (required) connection string
+  # * bot_name (required) name of bot
+  # * token (required) token
+  def set_params(params)
+    RBender::MongoClient.setup(params['title'], params['mongo'])
+
+    session_setup(RBender::MongoClient.client)
+
+    @token = params['development']['token']
+    # if params.has_key? localizations
+    #
+    # end
+  end
+
+  # Adds new state to the bot.
+  # @param [String] state_name - name of the state
+  # @param [Block] block - actions while state has invoked
+  #
+  def state(state_name, &block)
+    unless @states.has_key? state_name
+      @states[state_name] = block
+    else
+      raise "State name is duplicated!"
+    end
+  end
+
+
+  def global(&block)
+    @global_state = block
+  end
+
+
+  private
+
   def process_message(message)
     chat_id = message.from.id # Unique chat ID
 
@@ -54,48 +91,50 @@ class RBender::Base
       session = load_session(chat_id)
 
     else # If user is new
-      session = {_state: :start,
-                 _state_stack: [],
-                 _keyboard_switchers: {},
-                 _keyboard_switch_groups: {},
-                 _lang: :default
+      session = {state:                   :start,
+                 state_stack:             [],
+                 keyboard_switchers:     {},
+                 keyboard_switch_groups: {},
+                 lang:                   :default
       }
 
     end
+
     session[:user] = {chat_id: chat_id,
                       first_name: message.from.first_name,
                       last_name: message.from.last_name,
-                      username: message.from.username
+                      user_name: message.from.username
     }
 
     session[:user].freeze # User's data must be immutable!
 
     if is_start_message? message
-      session[:_state] = :start
-      session[:_state_stack] = []
+      session[:state]       = :start
+      session[:state_stack] = []
     end
 
-    state = session[:_state] # User's state
+    state = session[:state] # User's state
     state_block = @states[state] # Block of the state
-    state_object = RBender::State.new message, # Object to invoke
-                                      @api,
-                                      session,
-                                      &state_block
+    state_object = BoteeBot::State.new message, # Object to invoke
+                                       @api,
+                                       session,
+                                       &state_block
     state_object.instance_eval(&@global_state) unless @global_state.nil?
     state_object._build
     state_object._invoke
+
     save_session session
 
-    state_new = session[:_state] # New user's state
+    state_new = session[:state] # New user's state
 
     unless state_new == state # If state has changed
       state_object._invoke_after if state_object.has_after? #invoke after hook for an old state
 
       state_new_block = @states[state_new]
-      state_object = RBender::State.new message,
-                                        @api,
-                                        session,
-                                        &state_new_block
+      state_object = BoteeBot::State.new message,
+                                         @api,
+                                         session,
+                                         &state_new_block
 
       state_object.instance_eval(&@global_state) unless @global_state.nil?
       state_object._build
@@ -125,42 +164,6 @@ class RBender::Base
       end
     end
   end
-
-  # @param [Hash] params - hash with params
-  #
-  # Available parameters:
-  # * mongo (required) connection string
-  # * bot_name (required) name of bot
-  # * token (required) token
-  def set_params(params)
-    RBender::MongoClient.setup(params['title'], params['mongo'])
-
-    session_setup(RBender::MongoClient.client)
-
-    @token = params['development']['token']
-    # if params.has_key? localizations
-    #
-    # end
-  end
-
-
-  # Adds new state to the bot.
-  # @param [String] state_name - name of the state
-  # @param [Block] block - actions while state has invoked
-  #
-  def state(state_name, &block)
-    unless @states.has_key? state_name
-      @states[state_name] = block
-    else
-      raise "State name is duplicated!"
-    end
-  end
-
-
-  def global(&block)
-    @global_state = block
-  end
-
 end
 
 
