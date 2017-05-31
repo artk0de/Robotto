@@ -43,10 +43,6 @@ class RBender::Methods
 		@session[:state] = @session[:state_stack].pop
 	end
 
-	def switcher_state(id)
-		session[:keyboard_switchers][id]
-	end
-
 
 	#--------------
 	# API METHODS

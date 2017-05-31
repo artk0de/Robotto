@@ -56,18 +56,6 @@ class RBender::State
 			@keyboard.markup_final.each do |btn, final_btn|
 				if message.text == final_btn
 					instance_exec(&@keyboard.actions[btn])
-
-					unless (group_id = @keyboard.button_switch_group(btn)).nil? # Switch group's logic
-						group_size                                  = @keyboard.switch_groups[group_id].size
-						@session[:keyboard_switch_groups][group_id] += 1
-						@session[:keyboard_switch_groups][group_id] %= group_size
-					end
-					if @keyboard.switchers.member? btn # Switcher's Logic
-						switcher_size                      = @keyboard.switchers[btn].size
-						@session[:keyboard_switchers][btn] += 1
-						@session[:keyboard_switchers][btn] %= switcher_size
-					end
-					return
 				end
 			end
 		end
