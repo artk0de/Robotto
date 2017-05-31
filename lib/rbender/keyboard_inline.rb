@@ -45,13 +45,13 @@ class RBender::KeyboardInline
     @markup += [buttons]
   end
 
-  def _invoke
+  def invoke
     instance_eval(&@keyboard_block)
   end
 
-  def _build
+  def build
     @markup = []
-    _invoke
+    invoke()
 
     buttons = {}
     buttons.merge! @buttons_callback

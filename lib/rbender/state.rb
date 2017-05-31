@@ -11,32 +11,47 @@ class RBender::State
 		@action_before    = nil
 		@text_action      = nil
 		@helpers_block    = nil
+		@methods          = RBender::Methods.new(message, api, session)
 	end
 
-	private
-
-	def _keyboard
+	def get_keyboard
 		@keyboard
 	end
 
+	def message
+		@message
+	end
+
 	# Invokes states and processes user's input
-	def _invoke
+	def invoke
 		case message
 			when Telegram::Bot::Types::CallbackQuery
-				_process_callback
+				process_callback
 			when Telegram::Bot::Types::Message
-				_process_text_message
+				if @message.text
+					process_text_message
+				elsif @message.photo
+					process_photo
+				end
+
+			when Telegram::Bot::Types::Document
+				if @message.photo
+					process_photo
+				end
 			else
 				raise "This type isn't available: #{message.class}"
 		end
 	end
 
+	def process_photo
+		instance_exec(message.photo, &@photo_action) unless @photo_action.nil?
+	end
 	# Process if message is just text
-	def _process_text_message
+	def process_text_message
 
 		unless @keyboard.nil? # if state has keyboard
 			@keyboard.instance_eval(&@helpers_block) unless @helpers_block.nil?
-			_build_keyboard
+			build_keyboard
 
 			@keyboard.markup_final.each do |btn, final_btn|
 				if message.text == final_btn
@@ -58,18 +73,17 @@ class RBender::State
 		end
 
 		unless @text_action.nil?
-
 			instance_exec(@message.text, &@text_action)
 		end
 
 	end
 
 	# Process if message is inline keyboard callback
-	def _process_callback
-		keyboard_name, action = @message.data.split(BoteeBot::CALLBACK_SPLITTER)
+	def process_callback
+		keyboard_name, action = @message.data.split(RBender::CALLBACK_SPLITTER)
 		keyboard              = @inline_keyboards[keyboard_name.to_sym]
 		keyboard.instance_eval(&@helpers_block) unless @helpers_block.nil?
-		keyboard._invoke unless keyboard.nil?
+		keyboard.invoke unless keyboard.nil?
 
 		unless keyboard.nil?
 			unless keyboard.buttons_actions[action].nil?
@@ -82,22 +96,22 @@ class RBender::State
 		end
 	end
 
-	def _build
+	def build
 		instance_exec(&@state_block)
 	end
 
-	def _build_keyboard
-		@keyboard._build(@session)
+	def build_keyboard
+		@keyboard.build(@session)
 	end
 
-	def _invoke_keyboard
+	def invoke_keyboard
 
 		@api.send_message(chat_id:      message.from.id,
 											text:         @keyboard.response,
 											reply_markup: @keyboard.markup_tg)
 	end
 
-	def _invoke_before
+	def invoke_before
 		instance_eval(&@action_before)
 	end
 
@@ -109,7 +123,7 @@ class RBender::State
 		@action_before.nil? ? false : true
 	end
 
-	def _invoke_after
+	def invoke_after
 		instance_eval(&@action_after)
 	end
 
@@ -117,66 +131,13 @@ class RBender::State
 		@keyboard.nil? ? false : true
 	end
 
-	#--------------
-	# User methods
-	#--------------
-
 	public
-
-	def keyboard(response_message, &keyboard_block)
-		@keyboard         = BoteeBot::Keyboard.new response_message
-		@keyboard.session = @session
-		@keyboard.instance_eval(&keyboard_block)
-	end
-
-	#initialize helper methods
-	def helpers(&helpers_block)
-		@helpers_block = helpers_block
-		instance_eval(&helpers_block)
-	end
-
-	# Set message user gets while keyboard has invoked
-	def set_response(new_response)
-		@keyboard.set_response(new_response)
-	end
-
-	# Returns session hash
-	def session
-		@session
-	end
-
-	# Returns message object
-	def message
-		@message
-	end
 
 	# adds inline keyboard
 	def keyboard_inline(inline_keyboard_name, &inline_keyboard_block)
-		keyboard = @inline_keyboards[inline_keyboard_name] = BoteeBot::KeyboardInline.new(inline_keyboard_name,
-																																											@session,
-																																											inline_keyboard_block)
-	end
-
-	def inline_markup(name)
-
-		raise "Keyboard #{name} doesn't exists!" unless @inline_keyboards.member? name
-		keyboard = @inline_keyboards[name]
-		keyboard.instance_eval(&@helpers_block) unless @helpers_block.nil?
-		keyboard._build
-		keyboard.markup_tg
-	end
-
-	def switch(state_to)
-		@session[:state_stack].push(@session[:state])
-		@session[:state] = state_to
-	end
-
-	def switch_prev
-		@session[:state] = @session[:state_stack].pop
-	end
-
-	def switcher_state(id)
-		session[:keyboard_switchers][id]
+		@inline_keyboards[inline_keyboard_name] = RBender::KeyboardInline.new(inline_keyboard_name,
+																																					@session,
+																																					inline_keyboard_block)
 	end
 
 	#before hook
@@ -206,85 +167,51 @@ class RBender::State
 		end
 	end
 
-
-	#--------------
-	# API METHODS
-	#--------------
-	# Hides inline keyboard
-	# Must be called from any inline keyboard state
-	def hide_inline
-		edit_message_reply_markup
+	def keyboard(response_message, &keyboard_block)
+		@keyboard         = RBender::Keyboard.new response_message
+		@keyboard.session = @session
+		@keyboard.instance_eval(&keyboard_block)
 	end
 
-	# Hides keyboard's markup.
-	def hide_keyboard
-
+	#initialize helper methods
+	def helpers(&helpers_block)
+		@helpers_block = helpers_block
+		instance_eval(&helpers_block)
 	end
 
-	#
-	# @param text [String] string
-	#
-	def answer_callback_query(text: nil,
-														show_alert: nil)
-		begin
-			@api.answer_callback_query callback_query_id: @message.id,
-																 text:              text,
-																 show_alert:        show_alert
-		rescue
+	def photo(&action)
+		if @photo_action.nil?
+			@photo_action = action
+		else
+			raise 'Too many image processors!'
 		end
 	end
 
-	def send_message(text:,
-									 chat_id: @message.from.id,
-									 parse_mode: nil,
-									 disable_web_page_preview: nil,
-									 disable_notification: nil,
-									 reply_to_message_id: nil,
-									 reply_markup: nil)
+	alias image photo
+	alias picture photo
 
-		if text.strip.empty?
-			raise "A text can't be empty or consists of space symbols only"
-		end
-		@api.send_message chat_id:                  chat_id,
-											text:                     text,
-											disable_web_page_preview: disable_web_page_preview,
-											disable_notification:     disable_notification,
-											reply_to_message_id:      reply_to_message_id,
-											parse_mode:               parse_mode,
-											reply_markup:             reply_markup
-	end
 
-	def edit_message_text(inline_message_id: nil,
-												text:,
-												message_id: @message.message.message_id,
-												parse_mode: nil,
-												disable_web_page_preview: nil,
-												reply_markup: nil)
-		begin
-			@api.edit_message_text chat_id:                  @message.from.id,
-														 message_id:               message_id,
-														 text:                     text,
-														 inline_message_id:        inline_message_id,
-														 parse_mode:               parse_mode,
-														 disable_web_page_preview: disable_web_page_preview,
-														 reply_markup:             reply_markup
-		rescue
+	def method_missing(m, *args, &block)
+		if RBender::Methods.method_defined? m
+			if block_given?
+				if args.empty?
+					return @methods.send(m, &block)
+				else
+					args = args[0] if args.count == 1
+					return @methods.send(m, args, &block)
+				end
+			else
+				if args.empty?
+					return @methods.send(m)
+				else
+					args = args[0] if args.count == 1
+					return @methods.send(m, args)
+				end
+			end
+		else
+			raise NoMethodError, "Method #{m} is missing"
 		end
 	end
 
-	def edit_message_reply_markup(chat_id: @message.from.id,
-																message_id: @message.message.message_id,
-																inline_message_id: nil,
-																reply_markup: nil)
-		begin
-			@api.edit_message_reply_markup chat_id:           chat_id,
-																		 message_id:        message_id,
-																		 inline_message_id: inline_message_id,
-																		 reply_markup:      reply_markup
-		rescue
-		end
-
-
-	end
 end
 

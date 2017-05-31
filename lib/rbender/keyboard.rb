@@ -98,7 +98,7 @@ class RBender::Keyboard
 
   # Method to initialize a keyboard
   #
-  def _build(session)
+  def build(session)
     #TODO: add localization support
     markup = []
     @markup.each do |line|

@@ -2,7 +2,7 @@ require 'rbender/base'
 require 'colorize'
 
 module RBender
-  VERSION = '0.4.0'
+  VERSION = '0.4.82'
   @@bot = RBender::Base.new
 
   def self.instance
@@ -33,7 +33,7 @@ def method_missing(m, *args, &block)
       end
     end
   else
-      raise NoMethodError, "Method #{m} is missing"
+      raise NoMethodError, "Method #{m} is missing!"
   end
 end
 

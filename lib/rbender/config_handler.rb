@@ -2,7 +2,8 @@ require 'yaml'
 
 module RBender
 	module ConfigHandler
-		CONFIG_PATH = 'config.yaml'
+		@@config_path = 'config.yaml'
+		CONFIG_NAME = 'config.yaml'
 
 
 		def self.underscore(str)
@@ -15,16 +16,20 @@ module RBender
 
 		def self.settings
 			begin
-				@@settings = YAML.load(File.read(CONFIG_PATH))
+				@@settings = YAML.load(File.read(@@config_path))
 			rescue
 				raise "Config file doesn't exists!"
 			end
 
 			def @@settings.save
-				File.write(CONFIG_PATH, @@settings.to_yaml)
+				File.write(@@config_path, @@settings.to_yaml)
 			end
 
 			@@settings
+		end
+
+		def self.config_path=(path)
+			@@config_path = "#{path}/#{CONFIG_NAME}"
 		end
 	end
 end

@@ -1,8 +1,8 @@
 ---
-title: SampleName
+title: DemoBot
 mongo: mongodb://localhost:27017
 development:
-  token: insert your token here
+  token: 193177596:AAGxlGvBj_YrF7jMaxz3V4o4XnUm8kOZ7V8
   log_error: true
   log_user: false
 production:

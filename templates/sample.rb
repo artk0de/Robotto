@@ -7,13 +7,15 @@ state :start do
 		# - - - - - -
 	end
 
-	keyboard do
+	response = "Sample response"
+	keyboard response do
 		# - - - - - - -
 		# Init keyboard
 		# - - - - - - -
 	end
 
-	inline_keyboard :kb_inline do
+
+	keyboard_inline :kb_inline do
 		# - - - - - -
 		# Init inline keyboard
 		# - - - - - -

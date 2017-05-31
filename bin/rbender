@@ -77,6 +77,7 @@ def create_project(options, args)
 
 	#TODO: change name in config
 
+	RBender::ConfigHandler.config_path = project_dir
 	config = RBender::ConfigHandler.settings
 	config['title'] = name
 	config.save
@@ -95,6 +96,7 @@ def run(options, args)
 		load "#{Dir.pwd}/#{title}.rb"
 		bot_frame = RBender.instance
 		#TODO: add mode setting
+		RBender::ConfigHandler.config_path = __dir__
 		bot_frame.set_params(settings)
 		bot_frame.run!
 end

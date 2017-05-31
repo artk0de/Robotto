@@ -6,164 +6,186 @@ require 'rbender/keyboard_inline'
 require 'rbender/mongo_client'
 require 'rbender/state'
 require 'rbender/config_handler'
+require 'rbender/methods'
+require 'rbender/keyboard'
+
 
 require 'telegram/bot'
 
 
 class RBender::Base
-  attr_accessor :api
-  include RBender::SessionManager
+	attr_accessor :api
+	include RBender::SessionManager
 
-  public
+	public
 
-  def initialize
-    @states = {}
-    @global_state = nil
-    @modules_block
-  end
+	def initialize
+		@states       = {}
+		@global_state = nil
+		@modules_block
+	end
 
-  def modules(&modules_block)
-    @modules_block = modules_block
-  end
+	def modules(&modules_block)
+		@modules_block = modules_block
+	end
 
-  # Runs the bot with server
-  def run!
-    puts "Bot is loading...".green
-    puts "Bot is running...".green
-    Telegram::Bot::Client.run(@token) do |bot|
-      @api = bot.api
+	# Runs the bot with server
+	def run!
+		puts "Bot is loading...".green
+		puts "Bot is running...".green
+		Telegram::Bot::Client.run(@token) do |bot|
+			@api = bot.api
 
-      unless @modules_block.nil?
-        instance_exec(@api, @mongo_client, &@modules_block)
-      end
-      bot.listen do |message| # When message has gotten
-        begin
-          process_message(message)
-        rescue => ex
-          puts ex.message
-        end
-      end
-    end
-  end
-
-
-  # @param [Hash] params - hash with params
-  #
-  # Available parameters:
-  # * mongo (required) connection string
-  # * bot_name (required) name of bot
-  # * token (required) token
-  def set_params(params)
-    RBender::MongoClient.setup(params['title'], params['mongo'])
-
-    session_setup(RBender::MongoClient.client)
-
-    @token = params['development']['token']
-    # if params.has_key? localizations
-    #
-    # end
-  end
-
-  # Adds new state to the bot.
-  # @param [String] state_name - name of the state
-  # @param [Block] block - actions while state has invoked
-  #
-  def state(state_name, &block)
-    unless @states.has_key? state_name
-      @states[state_name] = block
-    else
-      raise "State name is duplicated!"
-    end
-  end
+			unless @modules_block.nil?
+				instance_exec(@api, @mongo_client, &@modules_block)
+			end
+			bot.listen do |message| # When message has gotten
+				begin
+					process_message(message)
+				rescue => ex
+					puts ex.message.red
+					puts ex.backtrace
+				end
+			end
+		end
+	end
 
 
-  def global(&block)
-    @global_state = block
-  end
+	# @param [Hash] params - hash with params
+	#
+	# Available parameters:
+	# * mongo (required) connection string
+	# * bot_name (required) name of bot
+	# * token (required) token
+	def set_params(params)
+		RBender::MongoClient.setup(params['title'], params['mongo'])
+
+		session_setup(RBender::MongoClient.client)
+
+		@token = params['development']['token']
+		# if params.has_key? localizations
+		#
+		# end
+	end
+
+	# Adds new state to the bot.
+	# @param [String] state_name - name of the state
+	# @param [Block] block - actions while state has invoked
+	#
+	def state(state_name, &block)
+		unless @states.has_key? state_name
+			@states[state_name] = block
+		else
+			raise "State name is duplicated!"
+		end
+	end
 
 
-  private
+	def global(&block)
+		@global_state = block
+	end
 
-  def process_message(message)
-    chat_id = message.from.id # Unique chat ID
 
-    if has_session?(chat_id)
-      session = load_session(chat_id)
+	private
 
-    else # If user is new
-      session = {state:                   :start,
-                 state_stack:             [],
-                 keyboard_switchers:     {},
-                 keyboard_switch_groups: {},
-                 lang:                   :default
-      }
+	def process_message(message)
+		chat_id = message.from.id # Unique chat ID
 
-    end
+		session = get_session(chat_id, message)
 
-    session[:user] = {chat_id: chat_id,
-                      first_name: message.from.first_name,
-                      last_name: message.from.last_name,
-                      user_name: message.from.username
-    }
+		if is_start_message? message
+			session[:state]       = :start
+			session[:state_stack] = []
+		end
 
-    session[:user].freeze # User's data must be immutable!
+		state        = session[:state] # User's state
+		state_block  = @states[state] # Block of the state
+		state_object = RBender::State.new message, # Object to invoke
+																			 @api,
+																			 session,
+																			 &state_block
+		state_object.instance_eval(&@global_state) unless @global_state.nil?
+		state_object.build
+		state_object.invoke
 
-    if is_start_message? message
-      session[:state]       = :start
-      session[:state_stack] = []
-    end
+		if is_start_message? message
+			state_object.invoke_before if state_object.has_before?
+		end
 
-    state = session[:state] # User's state
-    state_block = @states[state] # Block of the state
-    state_object = BoteeBot::State.new message, # Object to invoke
-                                       @api,
-                                       session,
-                                       &state_block
-    state_object.instance_eval(&@global_state) unless @global_state.nil?
-    state_object._build
-    state_object._invoke
+		save_session session
 
-    save_session session
+		state_new = session[:state] # New user's state
 
-    state_new = session[:state] # New user's state
 
-    unless state_new == state # If state has changed
-      state_object._invoke_after if state_object.has_after? #invoke after hook for an old state
+		on_state_changed(state_object,
+										 state,
+										 state_new,
+										 message,
+										 session)
+	end
 
-      state_new_block = @states[state_new]
-      state_object = BoteeBot::State.new message,
-                                         @api,
-                                         session,
-                                         &state_new_block
+	def on_state_changed(state_object, state_old, state_new, message, session)
+		if state_new != state_old  # If state has changed
+			state_object.invoke_after if state_object.has_after? #invoke after hook for an old state
 
-      state_object.instance_eval(&@global_state) unless @global_state.nil?
-      state_object._build
+			state_new_block = @states[state_new]
+			state_object    = RBender::State.new message,
+																						@api,
+																						session,
+																						&state_new_block
 
-      if state_object.has_keyboard? # Invoke a keyboard if it's exists
-        state_object._build_keyboard
-        state_object._invoke_keyboard
-      end
+			state_object.instance_eval(&@global_state) unless @global_state.nil?
+			state_object.build
 
-      state_object._invoke_before if state_object.has_before? #invoke before hook for a new state
-    else
-      if state_object.has_keyboard? # Invoke a keyboard if it's exists
-        unless state_object._keyboard.one_time? or not state_object._keyboard.force_invoked?
-          state_object._build_keyboard
-          state_object._invoke_keyboard
-        end
-      end
-    end
-  end
+			if state_object.has_keyboard? # Invoke a keyboard if it's exists
+				state_object.build_keyboard
+				state_object.invoke_keyboard
+			end
 
-  def is_start_message?(message)
-    if message.instance_of? Telegram::Bot::Types::Message
-      if message.text == '/start'
-        true
-      else
-        false
-      end
-    end
-  end
+			state_object.invoke_before if state_object.has_before? #invoke before hook for a new state
+		else
+			if state_object.has_keyboard? # Invoke a keyboard if it's exists
+				unless state_object.get_keyboard.one_time? or not state_object.get_keyboard.force_invoked?
+					state_object.build_keyboard
+					state_object.invoke_keyboard
+				end
+			end
+		end
+	end
+
+	def get_session(chat_id, message)
+		if has_session?(chat_id)
+			session = load_session(chat_id)
+
+		else # If user is new
+			session = {state:                  :start,
+								 state_stack:            [],
+								 keyboard_switchers:     {},
+								 keyboard_switch_groups: {},
+								 lang:                   :default
+			}
+
+		end
+
+		session[:user] = {chat_id:    chat_id,
+											first_name: message.from.first_name,
+											last_name:  message.from.last_name,
+											user_name:  message.from.username
+		}
+
+		session[:user].freeze # User's data must be immutable!
+		session
+	end
+
+	def is_start_message?(message)
+		if message.instance_of? Telegram::Bot::Types::Message
+			if message.text == '/start'
+				true
+			else
+				false
+			end
+		end
+	end
 end
 
 
