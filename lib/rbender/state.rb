@@ -12,6 +12,7 @@ class RBender::State
 		@text_action      = nil
 		@helpers_block    = nil
 		@methods          = RBender::Methods.new(message, api, session)
+		@commands         = {}
 	end
 
 	def get_keyboard
@@ -29,7 +30,11 @@ class RBender::State
 				process_callback
 			when Telegram::Bot::Types::Message
 				if @message.text
-					process_text_message
+					if @message.text[0] == '/' and @message.text != '/start'
+						process_command(@message.text)
+					else
+						process_text_message
+					end
 				elsif @message.photo
 					process_photo
 				end
@@ -43,9 +48,22 @@ class RBender::State
 		end
 	end
 
+	# @param command String
+	def process_command(command_line)
+		splitted = command_line.split(" ")
+		command = splitted[0]
+		splitted.delete_at 0
+		params = splitted
+
+		if @commands.include? command
+			instance_exec(params, &@commands[command])
+		end
+	end
+
 	def process_photo
 		instance_exec(message.photo, &@photo_action) unless @photo_action.nil?
 	end
+
 	# Process if message is just text
 	def process_text_message
 
@@ -178,6 +196,18 @@ class RBender::State
 	alias image photo
 	alias picture photo
 
+	def command(command, &action)
+		unless @commands.include? command
+			if command[0] == '/'
+				@commands[command] = action
+			else
+				raise "Command should be started from slash symbol (/)"
+			end
+		else
+			raise "Command #{command} already exists"
+		end
+	end
+
 
 	def method_missing(m, *args, &block)
 		if RBender::Methods.method_defined? m
@@ -199,6 +229,15 @@ class RBender::State
 		else
 			raise NoMethodError, "Method #{m} is missing"
 		end
+	end
+
+	# Returns Inline keyboard object by name
+	def inline_markup(name)
+		raise "Keyboard #{name} doesn't exists!" unless @inline_keyboards.member? name
+		keyboard = @inline_keyboards[name]
+		keyboard.instance_eval(&@helpers_block) unless @helpers_block.nil?
+		keyboard.build
+		keyboard.markup_tg
 	end
 
 end

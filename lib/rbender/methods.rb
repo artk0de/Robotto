@@ -1,3 +1,5 @@
+require 'faraday'
+
 class RBender::Methods
 
 	def initialize(message, api, session)
@@ -25,15 +27,6 @@ class RBender::Methods
 		@message
 	end
 
-	# Returns Inline keyboard object by name
-	def inline_markup(name)
-		raise "Keyboard #{name} doesn't exists!" unless @inline_keyboards.member? name
-		keyboard = @inline_keyboards[name]
-		keyboard.instance_eval(&@helpers_block) unless @helpers_block.nil?
-		keyboard.build
-		keyboard.markup_tg
-	end
-
 	def switch(state_to)
 		@session[:state_stack].push(@session[:state])
 		@session[:state] = state_to
@@ -49,27 +42,6 @@ class RBender::Methods
 	#--------------
 	# Hides inline keyboard
 	# Must be called from any inline keyboard state
-	def hide_inline
-		edit_message_reply_markup
-	end
-
-	# Hides keyboard's markup.
-	def hide_keyboard
-
-	end
-
-	#
-	# @param text [String] string
-	#
-	def answer_callback_query(text: nil,
-														show_alert: nil)
-		begin
-			@api.answer_callback_query callback_query_id: @message.id,
-																 text:              text,
-																 show_alert:        show_alert
-		rescue
-		end
-	end
 
 	def send_message(text:,
 									 chat_id: @message.from.id,
@@ -376,5 +348,35 @@ class RBender::Methods
 												 user_id: user_id)
 	end
 
+	def upload_file(filename, content_type)
+		filepath = "#{__dir__}/public/#{filename}"
+		Faraday::UploadIO.new(filepath, content_type)
+	end
+
+	alias file upload_file
+	alias upload upload_file
+
+	def download_file(file_path:, to:)
+		url   = 'https://api.telegram.org/file/bot'
+		token = RBender::ConfigHandler.token
+		path  = Dir.pwd + "/public/#{to}"
+
+
+		http_conn = Faraday.new do |builder|
+			builder.adapter(Faraday.default_adapter)
+		end
+
+		response = http_conn.get "#{url}#{token}/#{file_path}"
+
+		dir = File.dirname(path)
+
+		unless File.directory?(dir)
+			FileUtils.mkdir_p(dir)
+		end
+
+		File.open(path, 'wb') { |fp| fp.write(response.body)}
+	end
+
+	alias download download_file
 end
 

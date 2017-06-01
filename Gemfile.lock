@@ -32,8 +32,9 @@ PLATFORMS
 
 DEPENDENCIES
   colorize
+  faraday
   mongo
   telegram-bot-ruby
 
 BUNDLED WITH
-   1.12.5
+   1.14.3

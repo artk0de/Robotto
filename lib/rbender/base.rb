@@ -44,7 +44,7 @@ class RBender::Base
 					process_message(message)
 				rescue => ex
 					puts ex.message.red
-					puts ex.backtrace
+					puts ex.backtrace_locations
 				end
 			end
 		end
@@ -63,6 +63,8 @@ class RBender::Base
 		session_setup(RBender::MongoClient.client)
 
 		@token = params['development']['token']
+		RBender::ConfigHandler.token = @token
+
 		# if params.has_key? localizations
 		#
 		# end

@@ -1,5 +1,3 @@
-CALLBACK_SPLITTER = '|'
-
 class RBender::KeyboardInline
   attr_accessor :markup_tg,
                 :buttons_actions

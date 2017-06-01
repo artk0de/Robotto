@@ -31,5 +31,13 @@ module RBender
 		def self.config_path=(path)
 			@@config_path = "#{path}/#{CONFIG_NAME}"
 		end
+
+		def self.token=(token)
+			@@token = token
+		end
+
+		def self.token
+			@@token
+		end
 	end
 end

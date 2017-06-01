@@ -2,7 +2,8 @@ require 'rbender/base'
 require 'colorize'
 
 module RBender
-  VERSION = '0.5.1'
+  VERSION = '0.5.22'
+  CALLBACK_SPLITTER = '|'
   @@bot = RBender::Base.new
 
   def self.instance
