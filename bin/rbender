@@ -17,7 +17,6 @@ class OptParser
 
 		global = OptionParser.new do |opts|
 			opts.banner = "Usage: rbender [options]"
-
 			opts.separator ""
 			opts.separator "Common options:"
 			opts.on_tail("-v", "--version", "Prints current RBender version") do
@@ -67,6 +66,7 @@ def create_project(options, args)
 	FileUtils.chdir name
 	FileUtils.mkdir "locales"
 	FileUtils.mkdir "lib"
+	FileUtils.mkdir "public"
 
 	FileUtils.chdir __dir__
 	FileUtils.chdir "../templates"

@@ -68,30 +68,12 @@ class RBender::Keyboard
 		@response = new_response
 	end
 
-	# Adds switcher to buttons
-	def switcher(id, *switches)
-		@switchers[id] = switches
-	end
-
-	# Adds switch group
-	def switch_group(group_name, *buttons)
-		@switch_groups[group_name] = buttons
-	end
 
 	# Resize telegram buttons
 	def resize
 		@resize = true
 	end
 
-	# Adds button switch group
-	def button_switch_group(button_id)
-		@switch_groups.each do |group, buttons|
-			if buttons.include? button_id
-				return group
-			end
-		end
-		nil
-	end
 
 	# Method to initialize a keyboard
 	#
