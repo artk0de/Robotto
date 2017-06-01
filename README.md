@@ -179,8 +179,10 @@ end
 Every keyboard are assigned to single state and executes at the same time as state has changed.
 ```ruby
 state :state_main do
-  keyboard_response = "This is a keyboard"
-  keyboard keyboard_response do
+
+  keyboard do
+    keyboard_response = "This is a keyboard"
+    set_response(keyboard_response) # Response is REQUIRED!!!
     button :btn_one, "One" do
       set_response("You've pressed ONE") # change keyboard response to user
       # action callback
