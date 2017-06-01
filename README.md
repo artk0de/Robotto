@@ -292,7 +292,9 @@ RBender::MongoClient.client
 |modules| — | Defines additional bot modules <br> *(Returns additional parameters api_driver and mongodb_driver)*|
 
 #### In-state methods
+
 Used in **state** block.
+
 | Method name| Arguments | Description|
 |------------|------------|------------|
 |keyboard| **kb_response** *String* message displayed to user when keyboard has showed <br> **&block** keyboard code block| Defines keyboard |
@@ -314,7 +316,9 @@ Used in **state** block.
 |helpers| **&block** block with defined helper methods | Defines helpers
 
 #### Hooks/callbacks
+
 Used inside hooks.
+
 | Method name| Arguments | Description|
 |------------|------------|------------|
 |switch| **state_id** *Symbol* id of needed state | Changes state of user |
@@ -324,7 +328,9 @@ Used inside hooks.
 |message| - | Returns last (usually actual) message object
 
 #### Keyboard
+
 Used inside keyboard block.
+
 | Method name| Arguments | Description|
 |------------|------------|------------|
 |session| – | Return user's session
@@ -334,7 +340,9 @@ Used inside keyboard block.
 |one_time| - | Hide keyboard after use
 
 #### Inline keyboard
+
 Used inside keyboard_inline block.
+
 | Method name| Arguments | Description|
 |------------|------------|------------|
 |session| – | Return user's session
