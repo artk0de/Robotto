@@ -179,8 +179,10 @@ end
 Every keyboard are assigned to single state and executes at the same time as state has changed.
 ```ruby
 state :state_main do
-  keyboard_response = "This is a keyboard"
-  keyboard keyboard_response do
+
+  keyboard do
+    keyboard_response = "This is a keyboard"
+    set_response(keyboard_response) # Response is REQUIRED!!!
     button :btn_one, "One" do
       set_response("You've pressed ONE") # change keyboard response to user
       # action callback
@@ -297,6 +299,7 @@ RBender::MongoClient.client
 |before| **&block** hook block code | Hook invoked before over hooks are executed  |
 |text| **&block** hook block code | Hook invoked on text messages |
 |audio| **&block** hook block code | Hook invoked on audio messages |
+|photo <br> (*Aliases:* image, picture)| **&block** hook block code | Hook invoked on photos |
 |video| **&block** hook block code | Hook invoked on video messages |
 |voice| **&block** hook block code | Hook invoked on voice messages |
 |document| **&block** hook block code | Hook invoked on document messages |
