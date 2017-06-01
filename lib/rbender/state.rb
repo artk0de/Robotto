@@ -155,8 +155,8 @@ class RBender::State
 		end
 	end
 
-	def keyboard(response_message, &keyboard_block)
-		@keyboard         = RBender::Keyboard.new response_message
+	def keyboard(&keyboard_block)
+		@keyboard         = RBender::Keyboard.new
 		@keyboard.session = @session
 		@keyboard.instance_eval(&keyboard_block)
 	end

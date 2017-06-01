@@ -85,7 +85,7 @@ class RBender::Keyboard
 				button = @localizations[button_id].dup
 
 				buf_line << button
-				@markup_final[btn_id] = button
+				@markup_final[button_id] = button
 			end
 			markup << buf_line
 		end
