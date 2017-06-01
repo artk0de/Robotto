@@ -297,6 +297,7 @@ RBender::MongoClient.client
 |before| **&block** hook block code | Hook invoked before over hooks are executed  |
 |text| **&block** hook block code | Hook invoked on text messages |
 |audio| **&block** hook block code | Hook invoked on audio messages |
+|photo <br> (*Aliases:* image, picture)| **&block** hook block code | Hook invoked on photos |
 |video| **&block** hook block code | Hook invoked on video messages |
 |voice| **&block** hook block code | Hook invoked on voice messages |
 |document| **&block** hook block code | Hook invoked on document messages |
