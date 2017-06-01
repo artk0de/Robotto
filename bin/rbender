@@ -20,7 +20,7 @@ class OptParser
 			opts.separator ""
 			opts.separator "Common options:"
 			opts.on_tail("-v", "--version", "Prints current RBender version") do
-				puts "RBender version: #{RBender::VERSION}"
+				puts "RBender version: #{Gem.loaded_specs["rbender"].version}"
 				puts "by art2rik (https://github.com/art2rik)"
 			end
 
