@@ -7,8 +7,18 @@ state :start do
 		# - - - - - -
 	end
 
-	response = "Sample response"
-	keyboard response do
+
+	keyboard do
+		set_response("Sample response") #response are required
+		button :btn_1, "Btn1" do
+			# do something
+		end
+
+		button :btn_2, "Btn2" do
+			# do something
+		end
+
+		add_line :btn_1, :btn_2
 		# - - - - - - -
 		# Init keyboard
 		# - - - - - - -
@@ -27,7 +37,7 @@ state :start do
 		# - - - - - -
 	end
 
-	text do |message|
+	text do |text|
 		# - - - - - - - - - - - -
 		# Process user's message
 		# - - - - - - - - - - - -

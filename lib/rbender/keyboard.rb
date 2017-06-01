@@ -10,8 +10,7 @@ class RBender::Keyboard
 								:switch_groups,
 								:session
 
-	def initialize(response)
-		@response            = response
+	def initialize
 		@actions             = {}
 		@markup              = []
 		@localizations       = {}

@@ -93,10 +93,6 @@ class RBender::Base
 
 		session = get_session(chat_id, message)
 
-		if is_start_message? message
-			session[:state]       = :start
-			session[:state_stack] = []
-		end
 
 		state        = session[:state] # User's state
 		state_block  = @states[state] # Block of the state
@@ -174,6 +170,12 @@ class RBender::Base
 		}
 
 		session[:user].freeze # User's data must be immutable!
+
+		if is_start_message? message
+			session[:state]       = :start
+			session[:state_stack] = []
+		end
+
 		session
 	end
 
