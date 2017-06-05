@@ -281,6 +281,7 @@ RBender use [telegram-bot-ruby](https://github.com/atipugin/telegram-bot-ruby) a
 ```ruby
 RBender::MongoClient.client
 ```
+## Download/ Upload 
 ## Methods
 ### RBender methods
 #### General methods
