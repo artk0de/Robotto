@@ -53,8 +53,10 @@ def create_project(options, args)
 	unless args[0] =~ /\w{3,16}/ and args[1] == nil
 		raise ArgumentError, "Name must be from 3 to 16 english letters without spaces"
 	end
+
 	name = args[0]
 	name_undrscr = RBender::ConfigHandler.underscore(name)
+
 	begin
 	FileUtils.mkdir name
 	rescue
@@ -83,7 +85,6 @@ def create_project(options, args)
 	config.save
 
 	puts "Project #{name} successfully created"
-
 end
 
 def run(options, args)
@@ -92,9 +93,13 @@ def run(options, args)
 		rescue
 			puts 'Main file or config are missing!'
 		end
+
 		title = RBender::ConfigHandler.underscore(settings['title'])
+
 		load "#{Dir.pwd}/#{title}.rb"
+
 		bot_frame = RBender.instance
+
 		#TODO: add mode setting
 		RBender::ConfigHandler.config_path = __dir__
 		bot_frame.set_params(settings)
