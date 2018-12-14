@@ -2,8 +2,9 @@ module RBender
   module SessionManager
 
     private
+
     def session_setup(mongo_client)
-      @mongo_client = mongo_client
+      @mongo_client   = mongo_client
       @sessions_mongo = @mongo_client[:sessions]
     end
 
@@ -16,9 +17,9 @@ module RBender
     end
 
     def save_session(session)
-      @sessions_mongo.update_one({chat_id: session[:user][:chat_id]},
-                                 {'$set' => {session: session}},
-                                 {upsert: true})
+      @sessions_mongo.update_one({ chat_id: session[:user][:chat_id] },
+                                 { '$set' => { session: session } },
+                                 { upsert: true })
     end
 
     def has_session?(chat_id)
@@ -27,9 +28,10 @@ module RBender
     end
 
     public
+
     def self.chatid_list
-      sessions = RBender::MongoClient.client[:sessions]
-      result = sessions.distinct('chat_id')
+      sessions    = RBender::MongoClient.client[:sessions]
+      result      = sessions.distinct('chat_id')
       chatid_list = []
       result.each do |doc|
         chatid_list << doc
@@ -39,14 +41,9 @@ module RBender
   end
 end
 
-#
 # Mongo scheme:
 # Session
 # {chat_id: {session_key: session_value}}
 #
 # States
 # {chat_id: state}
-#
-#
-#
-#

@@ -6,6 +6,7 @@ class RBender::MongoClient
   attr_reader :mongo_client
 
   public
+
   def self.client
     instance.mongo_client
   end
@@ -15,7 +16,7 @@ class RBender::MongoClient
   end
 
   def setup(bot_name, mongo_string)
-    @bot_name = bot_name
+    @bot_name     = bot_name
     @mongo_client = Mongo::Client.new(mongo_string, :database => bot_name)
 
     Mongo::Logger.logger.level = ::Logger::FATAL

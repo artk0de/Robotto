@@ -3,15 +3,15 @@ class RBender::KeyboardInline
                 :buttons_actions
 
   def initialize(name, session, block)
-    @name = name
+    @name             = name
     @buttons_callback = {}
-    @buttons_inline = {}
-    @buttons_links = {}
-    @buttons_actions = {}
-    @markup = []
-    @markup_tg = []
-    @session = session
-    @keyboard_block = block
+    @buttons_inline   = {}
+    @buttons_links    = {}
+    @buttons_actions  = {}
+    @markup           = []
+    @markup_tg        = []
+    @session          = session
+    @keyboard_block   = block
   end
 
   def session
@@ -20,21 +20,21 @@ class RBender::KeyboardInline
 
   # Adds button with callback
   def button(name, description, &action)
-    callback = @name.to_s + RBender::CALLBACK_SPLITTER + name.to_s
-    @buttons_callback[name] = Telegram::Bot::Types::InlineKeyboardButton.new(text: description,
-                                                                             callback_data: callback)
+    callback                    = @name.to_s + RBender::CALLBACK_SPLITTER + name.to_s
+    @buttons_callback[name]     = Telegram::Bot::Types::InlineKeyboardButton.new(text:          description,
+                                                                                 callback_data: callback)
     @buttons_actions[name.to_s] = action
   end
 
   # Adds link button
   def button_link(name, description, link)
     @buttons_links[name] = Telegram::Bot::Types::InlineKeyboardButton.new(text: description,
-                                                                          url: link)
+                                                                          url:  link)
   end
 
   # Adds inline switch mode button
   def button_inline(name, description, inline_query)
-    @buttons_inline[name] = Telegram::Bot::Types::InlineKeyboardButton.new(text: description,
+    @buttons_inline[name] = Telegram::Bot::Types::InlineKeyboardButton.new(text:                description,
                                                                            switch_inline_query: inline_query)
   end
 
