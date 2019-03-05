@@ -8,6 +8,7 @@ class RBender::KeyboardInline
     @buttons_inline   = {}
     @buttons_links    = {}
     @buttons_actions  = {}
+    @buttons_pay      = {}
     @markup           = []
     @markup_tg        = []
     @session          = session
@@ -38,6 +39,13 @@ class RBender::KeyboardInline
                                                                            switch_inline_query: inline_query)
   end
 
+  # def button_callback
+
+  def button_pay(name, description)
+    @buttons_pay[name] = Telegram::Bot::Types::InlineKeyboardButton.new(text: description,
+                                                                        pay: true)
+  end
+
   # Adds a line to markup
   def add_line(*buttons)
     @markup += [buttons]
@@ -55,6 +63,7 @@ class RBender::KeyboardInline
     buttons.merge! @buttons_callback
     buttons.merge! @buttons_links
     buttons.merge! @buttons_inline
+    buttons.merge! @buttons_pay
 
     markup = []
     @markup.each do |btn_row|

@@ -1,22 +1,25 @@
 class RBender::State
-
   def initialize(message, api, session, &state_block)
-    @message          = message
-    @api              = api
-    @session          = session
-    @state_block      = state_block
-    @keyboard         = nil
-    @inline_keyboards = {}
-    @action_after     = nil
-    @action_before    = nil
-    @text_action      = nil
-    @helpers_block    = nil
-    @methods          = RBender::Methods.new(message, api, session)
-    @commands         = {}
+    @message     = message
+    @api         = api
+    @session     = session
+    @methods     = RBender::Methods.new(message, api, session)
+    @state_block = state_block
+
+    @keyboard_block     = nil
+    @after_block        = nil
+    @before_block       = nil
+    @text_block         = nil
+    @helpers_block      = nil
+    @pre_checkout_block = nil
+    @checkout_block     = nil
+
+    @commands_blocks         = {}
+    @inline_keyboards_blocks = {}
   end
 
   def get_keyboard
-    @keyboard
+    @keyboard_block
   end
 
   def message
@@ -35,17 +38,24 @@ class RBender::State
         else
           process_text_message
         end
+      elsif @message.successful_payment
+        process_checkout
       elsif @message.photo
         process_photo
       end
-
-    when Telegram::Bot::Types::Document
-      if @message.photo
-        process_photo
-      end
+    when Telegram::Bot::Types::PreCheckoutQuery
+      process_pre_checkout
     else
       raise "This type isn't available: #{message.class}"
     end
+  end
+
+  def process_pre_checkout
+    instance_exec(@message, &@pre_checkout_block)
+  end
+
+  def process_checkout
+    instance_exec(@message.successful_payment, &@checkout_block)
   end
 
   # @param command String
@@ -55,8 +65,8 @@ class RBender::State
     splitted.delete_at 0
     params = splitted
 
-    if @commands.include? command
-      instance_exec(params, &@commands[command])
+    if @commands_blocks.include? command
+      instance_exec(params, &@commands_blocks[command])
     end
   end
 
@@ -66,28 +76,27 @@ class RBender::State
 
   # Process if message is just text
   def process_text_message
-
-    unless @keyboard.nil? # if state has keyboard
-      @keyboard.instance_eval(&@helpers_block) unless @helpers_block.nil?
+    if @keyboard_block # if state has keyboard
+      @keyboard_block.instance_eval(&@helpers_block) unless @helpers_block.nil?
       build_keyboard
 
-      @keyboard.markup_final.each do |btn, final_btn|
+      @keyboard_block.markup_final.each do |btn, final_btn|
         if message.text == final_btn
-          instance_exec(&@keyboard.actions[btn])
+          instance_exec(&@keyboard_block.actions[btn]) # Process keyboard action
+          return
         end
       end
     end
 
-    unless @text_action.nil?
-      instance_exec(@message.text, &@text_action)
+    unless @text_block.nil? # Else process text action
+      instance_exec(@message.text, &@text_block)
     end
-
   end
 
   # Process if message is inline keyboard callback
   def process_callback
     keyboard_name, action = @message.data.split(RBender::CALLBACK_SPLITTER)
-    keyboard              = @inline_keyboards[keyboard_name.to_sym]
+    keyboard              = @inline_keyboards_blocks[keyboard_name.to_sym]
     keyboard.instance_eval(&@helpers_block) unless @helpers_block.nil?
     keyboard.invoke unless keyboard.nil?
 
@@ -107,49 +116,48 @@ class RBender::State
   end
 
   def build_keyboard
-    @keyboard.build(@session)
+    @keyboard_block.build(@session)
   end
 
   def invoke_keyboard
-
     @api.send_message(chat_id:      message.from.id,
-                      text:         @keyboard.response,
-                      reply_markup: @keyboard.markup_tg)
+                      text:         @keyboard_block.response,
+                      reply_markup: @keyboard_block.markup_tg)
   end
 
   def invoke_before
-    instance_eval(&@action_before)
+    instance_eval(&@before_block)
   end
 
   def has_after?
-    @action_after.nil? ? false : true
+    @after_block.nil? ? false : true
   end
 
   def has_before?
-    @action_before.nil? ? false : true
+    @before_block.nil? ? false : true
   end
 
   def invoke_after
-    instance_eval(&@action_after)
+    instance_eval(&@after_block)
   end
 
   def has_keyboard?
-    @keyboard.nil? ? false : true
+    @keyboard_block.nil? ? false : true
   end
 
   public
 
   # adds inline keyboard
   def keyboard_inline(inline_keyboard_name, &inline_keyboard_block)
-    @inline_keyboards[inline_keyboard_name] = RBender::KeyboardInline.new(inline_keyboard_name,
-                                                                          @session,
-                                                                          inline_keyboard_block)
+    @inline_keyboards_blocks[inline_keyboard_name] = RBender::KeyboardInline.new(inline_keyboard_name,
+                                                                                 @session,
+                                                                                 inline_keyboard_block)
   end
 
   #before hook
   def before(&action)
-    if @action_before.nil?
-      @action_before = action
+    if @before_block.nil?
+      @before_block = action
     else
       raise 'Too many before hooks!'
     end
@@ -157,8 +165,8 @@ class RBender::State
 
   #after hook
   def after(&action)
-    if @action_after.nil?
-      @action_after = action
+    if @after_block.nil?
+      @after_block = action
     else
       raise 'Too many after hooks!'
     end
@@ -166,17 +174,17 @@ class RBender::State
 
   # Text callbacks
   def text(&action)
-    if @text_action.nil?
-      @text_action = action
+    if @text_block.nil?
+      @text_block = action
     else
       raise 'Too many text processors!'
     end
   end
 
   def keyboard(&keyboard_block)
-    @keyboard         = RBender::Keyboard.new
-    @keyboard.session = @session
-    @keyboard.instance_eval(&keyboard_block)
+    @keyboard_block         = RBender::Keyboard.new
+    @keyboard_block.session = @session
+    @keyboard_block.instance_eval(&keyboard_block)
   end
 
   #initialize helper methods
@@ -197,11 +205,11 @@ class RBender::State
   alias picture photo
 
   def command(command, &action)
-    if @commands.include? command
+    if @commands_blocks.include? command
       raise "Command #{command} already exists"
     else
       if command[0] == '/'
-        @commands[command] = action
+        @commands_blocks[command] = action
       else
         raise "Command should be started from slash symbol (/)"
       end
@@ -233,11 +241,32 @@ class RBender::State
 
   # Returns Inline keyboard object by name
   def inline_markup(name)
-    raise "Keyboard #{name} doesn't exists!" unless @inline_keyboards.member? name
-    keyboard = @inline_keyboards[name]
+    raise "Keyboard #{name} doesn't exists!" unless @inline_keyboards_blocks.member? name
+    keyboard = @inline_keyboards_blocks[name]
     keyboard.instance_eval(&@helpers_block) unless @helpers_block.nil?
     keyboard.build
     keyboard.markup_tg
   end
+
+  def pre_checkout(&block)
+    if @pre_checkout_block.nil?
+      @pre_checkout_block = block
+    else
+      raise 'Too many pre_checkout actions'
+    end
+  end
+
+  alias pre_checkout_query pre_checkout
+
+  def checkout(&block)
+    if @checkout_block.nil?
+      @checkout_block = block
+    else
+      raise 'Too many pre_checkout actions'
+    end
+  end
+
+  alias successful_payment checkout
+  alias payment checkout
 end
 

@@ -29,14 +29,14 @@ module RBender
 
     public
 
-    def self.chatid_list
+    def self.chat_id_list
       sessions    = RBender::MongoClient.client[:sessions]
       result      = sessions.distinct('chat_id')
-      chatid_list = []
+      chat_id_list = []
       result.each do |doc|
         chatid_list << doc
       end
-      chatid_list
+      chat_id_list
     end
   end
 end

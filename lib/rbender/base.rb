@@ -1,6 +1,3 @@
-# require_relative '../rbender'
-# require_relative 'sessionmanager'
-
 require 'rbender/sessionmanager'
 require 'rbender/keyboard_inline'
 require 'rbender/mongo_client'
@@ -9,9 +6,7 @@ require 'rbender/config_handler'
 require 'rbender/methods'
 require 'rbender/keyboard'
 
-
 require 'telegram/bot'
-
 
 class RBender::Base
   attr_accessor :api
@@ -84,16 +79,19 @@ class RBender::Base
 
 
   def global(&block)
-    @global_state = block
+    if @global_state
+      raise 'Global state already defined: You\'ve trying to define too much :global blocks'
+    else
+      @global_state = block
+    end
   end
-
 
   private
 
   def process_message(message)
     chat_id = message.from.id # Unique chat ID
 
-    session = get_session(chat_id, message)
+    session = session(chat_id, message)
 
 
     state        = session[:state] # User's state
@@ -113,7 +111,6 @@ class RBender::Base
     save_session session
 
     state_new = session[:state] # New user's state
-
 
     on_state_changed(state_object,
                      state,
@@ -141,6 +138,7 @@ class RBender::Base
       end
 
       state_object.invoke_before if state_object.has_before? #invoke before hook for a new state
+      save_session session
     else
       if state_object.has_keyboard? # Invoke a keyboard if it's exists
         unless state_object.get_keyboard.one_time? or not state_object.get_keyboard.force_invoked?
@@ -151,10 +149,9 @@ class RBender::Base
     end
   end
 
-  def get_session(chat_id, message)
+  def session(chat_id, message)
     if has_session?(chat_id)
       session = load_session(chat_id)
-
     else # If user is new
       session = { state:                  :start,
                   state_stack:            [],
@@ -162,13 +159,13 @@ class RBender::Base
                   keyboard_switch_groups: {},
                   lang:                   :default
       }
-
     end
 
-    session[:user] = { chat_id:    chat_id,
-                       first_name: message.from.first_name,
-                       last_name:  message.from.last_name,
-                       user_name:  message.from.username
+    session[:user] = {
+        chat_id:    chat_id,
+        first_name: message.from.first_name,
+        last_name:  message.from.last_name,
+        user_name:  message.from.username
     }
 
     session[:user].freeze # User's data must be immutable!
@@ -183,11 +180,9 @@ class RBender::Base
 
   def is_start_message?(message)
     if message.instance_of? Telegram::Bot::Types::Message
-      if message.text == '/start'
-        true
-      else
-        false
-      end
+      message.text == '/start' ? true : false
+    else
+      false
     end
   end
 end

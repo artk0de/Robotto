@@ -1,4 +1,5 @@
 require 'rbender'
+Dir["/lib/*.rb"].each {|file| require_relative file}
 
 state :start do
 	before do

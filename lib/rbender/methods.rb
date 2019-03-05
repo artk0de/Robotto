@@ -14,7 +14,7 @@ class RBender::Methods
 
   # Set message user gets while keyboard has invoked
   def set_response(new_response)
-    @keyboard.set_response(new_response)
+    @keyboard_block.set_response(new_response)
   end
 
   # Returns session hash
@@ -28,14 +28,8 @@ class RBender::Methods
   end
 
   def switch(state_to)
-    @session[:state_stack].push(@session[:state])
     @session[:state] = state_to
   end
-
-  def switch_prev
-    @session[:state] = @session[:state_stack].pop
-  end
-
 
   #--------------
   # API METHODS
@@ -115,7 +109,13 @@ class RBender::Methods
 
 
   def get_file(file_id:)
-    @api.get_file file_id: file_id
+    result = @api.get_file(file_id: file_id)
+    result['ok'] ? result['result'] : nil
+  end
+
+  def get_file_path(file_id:)
+    result = @api.get_file(file_id: file_id)
+    result['ok'] ? result['result']['file_path'] : nil
   end
 
   def get_me()
@@ -165,6 +165,16 @@ class RBender::Methods
                     disable_notification: disable_notification,
                     reply_to_message_id:  reply_to_message_id,
                     reply_markup:         reply_markup)
+  end
+
+  def send_media_group(chat_id: @message.from.to,
+                       media:,
+                       disable_notification: nil,
+                       reply_to_message_id: nil)
+    @api.send_media_group(chat_id:              chat_id,
+                          media:                media,
+                          disable_notification: disable_notification,
+                          reply_to_message_id:  reply_to_message_id)
   end
 
   def send_document(chat_id: @message.from.id,
@@ -348,9 +358,9 @@ class RBender::Methods
                          user_id: user_id)
   end
 
-  def upload_file(filename, content_type)
-    filepath = "#{__dir__}/public/#{filename}"
-    Faraday::UploadIO.new(filepath, content_type)
+  def upload_file(path: fkile_path)
+    full_path = "#{Dir.pwd}/public/#{path}"
+    Faraday::UploadIO.new(full_path, "multipart/form-data")
   end
 
   alias file upload_file
@@ -378,5 +388,49 @@ class RBender::Methods
   end
 
   alias download download_file
+
+  def send_invoice(chat_id: @message.from.id, title:, description:,
+                   payload:, provider_token:, start_parameter:, currency:,
+                   prices:, provider_data: nil, photo_url: nil, photo_size: nil,
+                   photo_width: nil, need_name: nil, need_phone_number: nil, need_email: nil,
+                   need_shipping_address:, send_phone_number_to_provider: nil, send_email_to_provider: nil,
+                   is_flexible: nil, disable_notification: nil, reply_to_message_id: nil, reply_markup: nil)
+
+    @api.send_invoice(chat_id:                       chat_id,
+                      title:                         title,
+                      description:                   description,
+                      payload:                       payload,
+                      provider_token:                provider_token,
+                      start_parameter:               start_parameter,
+                      currency:                      currency,
+                      prices:                        prices, provider_data: provider_data,
+                      photo_url:                     photo_url,
+                      photo_size:                    photo_size,
+                      photo_width:                   photo_width,
+                      need_name:                     need_name,
+                      need_phone_number:             need_phone_number,
+                      need_email:                    need_email,
+                      need_shipping_address:         need_shipping_address,
+                      send_phone_number_to_provider: send_phone_number_to_provider,
+                      send_email_to_provider:        send_email_to_provider,
+                      is_flexible:                   is_flexible,
+                      disable_notification:          disable_notification,
+                      reply_to_message_id:           reply_to_message_id,
+                      reply_markup:                  reply_markup)
+  end
+
+  def answer_shipping_query(shipping_query_id:, ok:,
+                            shipping_options: nil, error_message: nil)
+    @api.answer_shipping_query(shipping_query_id: shipping_query_id,
+                               shipping_options:  shipping_options,
+                               error_message:     error_message,
+                               ok:                ok)
+  end
+
+  def answer_pre_checkout_query(pre_checkout_query_id: @message.id, ok:, error_message: nil)
+    @api.answer_pre_checkout_query(pre_checkout_query_id: pre_checkout_query_id,
+                                   error_message:         error_message,
+                                   ok:                    ok)
+  end
 end
 

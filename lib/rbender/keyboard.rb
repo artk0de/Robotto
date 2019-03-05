@@ -90,7 +90,7 @@ class RBender::Keyboard
       markup << buf_line
     end
     @markup_tg = Telegram::Bot::Types::ReplyKeyboardMarkup
-                     .new(keyboard:          markup,
+                     .new(keyboard_block:    markup,
                           one_time_keyboard: one_time?,
                           resize_keyboard:   @resize)
   end

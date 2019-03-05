@@ -37,6 +37,14 @@ class OptParser
 				exit
 			end
 
+			opts.on("-d", "Set bot's working directory") do |dir|
+				if File.directory?(dir)
+			  	options.directory = dir
+				else
+					raise ArgumentError, "#{dir} isn't working directory"
+				end
+			end
+
 		end
 
 		global.order!
@@ -93,15 +101,17 @@ def run(options, args)
 		rescue
 			puts 'Main file or config are missing!'
 		end
-
+		wd = options.directory || Dir.pwd
+		Dir.chdir(wd)
 		title = RBender::ConfigHandler.underscore(settings['title'])
 
-		load "#{Dir.pwd}/#{title}.rb"
+		Dir["#{Dir.pwd}/lib/*.rb"].each { |file| require file }
+		load "#{wd}/#{title}.rb"
 
 		bot_frame = RBender.instance
 
 		#TODO: add mode setting
-		RBender::ConfigHandler.config_path = __dir__
+		RBender::ConfigHandler.config_path = wd
 		bot_frame.set_params(settings)
 		bot_frame.run!
 end

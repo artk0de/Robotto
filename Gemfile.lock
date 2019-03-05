@@ -1,4 +1,5 @@
 GEM
+  remote: https://rubygems.org/
   specs:
     axiom-types (0.1.1)
       descendants_tracker (~> 0.0.4)
@@ -37,4 +38,4 @@ DEPENDENCIES
   telegram-bot-ruby
 
 BUNDLED WITH
-   1.14.3
+   1.17.2
