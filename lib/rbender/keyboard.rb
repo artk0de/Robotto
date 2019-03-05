@@ -43,9 +43,9 @@ class RBender::Keyboard
   #     some_actions
   # end
 
-  def button(id, localizations, &action)
+  def button(id, description, &action)
     @actions[id]       = action
-    @localizations[id] = localizations
+    @localizations[id] = description
   end
 
   # Checks keyboard one time or not
@@ -89,9 +89,8 @@ class RBender::Keyboard
       end
       markup << buf_line
     end
-    @markup_tg = Telegram::Bot::Types::ReplyKeyboardMarkup
-                     .new(keyboard_block:    markup,
-                          one_time_keyboard: one_time?,
-                          resize_keyboard:   @resize)
+    @markup_tg = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard:    markup,
+                                                               one_time_keyboard: one_time?,
+                                                               resize_keyboard:   @resize)
   end
 end

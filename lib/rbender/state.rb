@@ -1,21 +1,21 @@
 class RBender::State
   def initialize(message, api, session, &state_block)
-    @message     = message
-    @api         = api
-    @session     = session
-    @methods     = RBender::Methods.new(message, api, session)
-    @state_block = state_block
+    @message          = message
+    @api              = api
+    @session          = session
+    @methods          = RBender::Methods.new(message, api, session)
+    @state_block      = state_block
 
-    @keyboard_block     = nil
-    @after_block        = nil
-    @before_block       = nil
-    @text_block         = nil
-    @helpers_block      = nil
-    @pre_checkout_block = nil
-    @checkout_block     = nil
-
-    @commands_blocks         = {}
+    @keyboard_block          = nil
     @inline_keyboards_blocks = {}
+    @adter_block             = nil
+    @before_block            = nil
+    @text_block              = nil
+    @helpers_block           = nil
+    @pre_checkout_block      = nil
+    @checkout_block          = nil
+
+    @commands_blocks = {}
   end
 
   def get_keyboard
@@ -38,13 +38,17 @@ class RBender::State
         else
           process_text_message
         end
-      elsif @message.successful_payment
-        process_checkout
       elsif @message.photo
+        process_photo
+      end
+    when Telegram::Bot::Types::Document
+      if @message.photo
         process_photo
       end
     when Telegram::Bot::Types::PreCheckoutQuery
       process_pre_checkout
+    when Telegram::Bot::Types::SuccessfullPayment
+      process_checkout
     else
       raise "This type isn't available: #{message.class}"
     end
@@ -55,7 +59,7 @@ class RBender::State
   end
 
   def process_checkout
-    instance_exec(@message.successful_payment, &@checkout_block)
+    instance_exec(@message, &@checkout_block)
   end
 
   # @param command String
@@ -76,7 +80,7 @@ class RBender::State
 
   # Process if message is just text
   def process_text_message
-    if @keyboard_block # if state has keyboard
+    unless @keyboard_block.nil? # if state has keyboard
       @keyboard_block.instance_eval(&@helpers_block) unless @helpers_block.nil?
       build_keyboard
 
@@ -88,7 +92,7 @@ class RBender::State
       end
     end
 
-    unless @text_block.nil? # Else process text action
+    unless @text_block.nil?  # Else process text action
       instance_exec(@message.text, &@text_block)
     end
   end
@@ -130,7 +134,7 @@ class RBender::State
   end
 
   def has_after?
-    @after_block.nil? ? false : true
+    @adter_block.nil? ? false : true
   end
 
   def has_before?
@@ -138,7 +142,7 @@ class RBender::State
   end
 
   def invoke_after
-    instance_eval(&@after_block)
+    instance_eval(&@adter_block)
   end
 
   def has_keyboard?
@@ -165,8 +169,8 @@ class RBender::State
 
   #after hook
   def after(&action)
-    if @after_block.nil?
-      @after_block = action
+    if @adter_block.nil?
+      @adter_block = action
     else
       raise 'Too many after hooks!'
     end
@@ -182,6 +186,9 @@ class RBender::State
   end
 
   def keyboard(&keyboard_block)
+    if @is_global
+      raise 'Global state doesn\'t support :keyboard method'
+    end
     @keyboard_block         = RBender::Keyboard.new
     @keyboard_block.session = @session
     @keyboard_block.instance_eval(&keyboard_block)
@@ -266,7 +273,7 @@ class RBender::State
     end
   end
 
-  alias successful_payment checkout
+  alias successfull_payment checkout
   alias payment checkout
 end
 
