@@ -19,7 +19,7 @@ state :start do
 			# do something
 		end
 
-		add_line :btn_1, :btn_2
+		line :btn_1, :btn_2
 		# - - - - - - -
 		# Init keyboard
 		# - - - - - - -

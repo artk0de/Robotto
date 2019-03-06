@@ -59,7 +59,7 @@ class RBender::Keyboard
   end
 
   # Add a line to markup
-  def add_line (*buttons)
+  def line (*buttons)
     @markup += [buttons]
   end
 

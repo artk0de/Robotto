@@ -8,12 +8,13 @@ class RBender::State
 
     @keyboard_block          = nil
     @inline_keyboards_blocks = {}
-    @adter_block             = nil
+    @after_block             = nil
     @before_block            = nil
     @text_block              = nil
     @helpers_block           = nil
     @pre_checkout_block      = nil
     @checkout_block          = nil
+    @shipping_block          = nil
 
     @commands_blocks = {}
   end
@@ -38,6 +39,8 @@ class RBender::State
         else
           process_text_message
         end
+      elsif @message.successful_payment
+        process_checkout
       elsif @message.photo
         process_photo
       end
@@ -47,8 +50,8 @@ class RBender::State
       end
     when Telegram::Bot::Types::PreCheckoutQuery
       process_pre_checkout
-    when Telegram::Bot::Types::SuccessfullPayment
-      process_checkout
+    when Telegram::Bot::Types::ShippingQuery
+      process_shipping
     else
       raise "This type isn't available: #{message.class}"
     end
@@ -59,7 +62,11 @@ class RBender::State
   end
 
   def process_checkout
-    instance_exec(@message, &@checkout_block)
+    instance_exec(@message.successful_payment, &@checkout_block)
+  end
+
+  def process_shipping
+    instance_exec(@message.shipping_query, &@shipping_block)
   end
 
   # @param command String
@@ -134,7 +141,7 @@ class RBender::State
   end
 
   def has_after?
-    @adter_block.nil? ? false : true
+    @after_block.nil? ? false : true
   end
 
   def has_before?
@@ -142,7 +149,7 @@ class RBender::State
   end
 
   def invoke_after
-    instance_eval(&@adter_block)
+    instance_eval(&@after_block)
   end
 
   def has_keyboard?
@@ -169,8 +176,8 @@ class RBender::State
 
   #after hook
   def after(&action)
-    if @adter_block.nil?
-      @adter_block = action
+    if @after_block.nil?
+      @after_block = action
     else
       raise 'Too many after hooks!'
     end
@@ -273,7 +280,11 @@ class RBender::State
     end
   end
 
-  alias successfull_payment checkout
+  alias successful_payment checkout
   alias payment checkout
+
+  def shipping(&block)
+    @shipping_block = block
+  end
 end
 

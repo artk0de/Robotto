@@ -47,7 +47,7 @@ class RBender::KeyboardInline
   end
 
   # Adds a line to markup
-  def add_line(*buttons)
+  def line(*buttons)
     @markup += [buttons]
   end
 

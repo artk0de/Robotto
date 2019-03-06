@@ -105,8 +105,12 @@ def run(options, args)
 		Dir.chdir(wd)
 		title = RBender::ConfigHandler.underscore(settings['title'])
 
-		Dir["#{Dir.pwd}/lib/*.rb"].each { |file| require file }
+
+		recursive_require("#{Dir.pwd}/lib/")
 		load "#{wd}/#{title}.rb"
+		recursive_load("#{Dir.pwd}/screens/")
+		recursive_load("#{Dir.pwd}/states/")
+
 
 		bot_frame = RBender.instance
 
@@ -114,6 +118,26 @@ def run(options, args)
 		RBender::ConfigHandler.config_path = wd
 		bot_frame.set_params(settings)
 		bot_frame.run!
+end
+
+def recursive_require(file_path)
+	Dir[file_path].each do |file|
+		if File.extname(file) == ".rb"
+			require file
+		elsif File.directory? file
+			recursive_require(file)
+		end
+	end
+end
+
+def recursive_load(folder)
+	Dir[file_path].each do |file|
+		if File.extname(file) == ".rb"
+			load file
+		elsif File.directory? file
+			recursive_load(file)
+		end
+	end
 end
 
 # --- EXECUTE CODE ______
@@ -126,6 +150,8 @@ begin
 			create_project(options, ARGV.dup)
 		when "start"
 			run(options, ARGV.dup)
+	else
+		puts "Wrong command #{command}"
 	end
 rescue ArgumentError => e
 	puts "Wrong argument: #{e}"

@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'rbender'
-  s.version     = '0.6.7'
+  s.version     = '0.6.8'
   s.date        = '2019-02-28'
   s.description = 'Gem provides domain specific language for messengers bot creation.'
   s.authors     = %w(Arthur Korochansky)
