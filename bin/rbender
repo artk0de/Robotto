@@ -121,25 +121,28 @@ def run(options, args)
 end
 
 def recursive_require(file_path)
-	Dir[file_path].each do |file|
+	return unless Dir.exist? file_path
+	Dir.foreach(file_path) do |file|
+		next if file == "." || file == ".."
 		if File.extname(file) == ".rb"
-			require file
-		elsif File.directory? file
-			recursive_require(file)
+			require "#{file_path}/#{file}"
+		elsif File.directory? "#{file_path}/#{file}"
+			recursive_require("#{file_path}#{file}")
 		end
 	end
 end
 
-def recursive_load(folder)
-	Dir[file_path].each do |file|
+def recursive_load(file_path)
+	return unless Dir.exist? file_path
+	Dir.foreach(file_path) do |file|
+		next if file == "." || file == ".."
 		if File.extname(file) == ".rb"
-			load file
-		elsif File.directory? file
-			recursive_load(file)
+			load "#{file_path}/#{file}"
+		elsif File.directory? "#{file_path}/#{file}"
+			recursive_load("#{file_path}#{file}")
 		end
 	end
 end
-
 # --- EXECUTE CODE ______
 begin
 	options = OptParser.parse(ARGV.dup)

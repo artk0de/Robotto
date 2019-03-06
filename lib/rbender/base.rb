@@ -71,7 +71,7 @@ class RBender::Base
   #
   def state(state_name, &block)
     if @states.has_key? state_name
-      raise "State name is duplicated!"
+      raise "State :#{state_name} is duplicated!"
     else
       @states[state_name] = block
     end
