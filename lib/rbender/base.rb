@@ -5,6 +5,7 @@ require 'rbender/state'
 require 'rbender/config_handler'
 require 'rbender/methods'
 require 'rbender/keyboard'
+require 'rbender/fly_settings'
 
 require 'telegram/bot'
 

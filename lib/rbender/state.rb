@@ -6,7 +6,8 @@ class RBender::State
     @methods          = RBender::Methods.new(message, api, session)
     @state_block      = state_block
 
-    @keyboard_block          = nil
+    @keyboard                = nil
+
     @inline_keyboards_blocks = {}
     @after_block             = nil
     @before_block            = nil
@@ -15,12 +16,14 @@ class RBender::State
     @pre_checkout_block      = nil
     @checkout_block          = nil
     @shipping_block          = nil
+    @photo_block             = nil
+    @contact_block           = nil
 
     @commands_blocks = {}
   end
 
   def get_keyboard
-    @keyboard_block
+    @keyboard
   end
 
   def message
@@ -41,6 +44,8 @@ class RBender::State
         end
       elsif @message.successful_payment
         process_checkout
+      elsif @message.contact
+        process_contact
       elsif @message.photo
         process_photo
       end
@@ -82,18 +87,22 @@ class RBender::State
   end
 
   def process_photo
-    instance_exec(message.photo, &@photo_action) unless @photo_action.nil?
+    instance_exec(message.photo, &@photo_block) unless @photo_block.nil?
+  end
+
+  def process_contact
+    instance_exec(message.contact, &@contact_block) unless @contact_block.nil?
   end
 
   # Process if message is just text
   def process_text_message
-    unless @keyboard_block.nil? # if state has keyboard
-      @keyboard_block.instance_eval(&@helpers_block) unless @helpers_block.nil?
+    unless @keyboard.nil? # if state has keyboard
+      @keyboard.instance_eval(&@helpers_block) unless @helpers_block.nil?
       build_keyboard
 
-      @keyboard_block.markup_final.each do |btn, final_btn|
+      @keyboard.markup_final.each do |btn, final_btn|
         if message.text == final_btn
-          instance_exec(&@keyboard_block.actions[btn]) # Process keyboard action
+          instance_exec(&@keyboard.actions[btn]) # Process keyboard action
           return
         end
       end
@@ -127,13 +136,13 @@ class RBender::State
   end
 
   def build_keyboard
-    @keyboard_block.build(@session)
+    @keyboard.build(@session)
   end
 
   def invoke_keyboard
     @api.send_message(chat_id:      message.from.id,
-                      text:         @keyboard_block.response,
-                      reply_markup: @keyboard_block.markup_tg)
+                      text:         @keyboard.response,
+                      reply_markup: @keyboard.markup_tg)
   end
 
   def invoke_before
@@ -153,7 +162,7 @@ class RBender::State
   end
 
   def has_keyboard?
-    @keyboard_block.nil? ? false : true
+    @keyboard.nil? ? false : true
   end
 
   public
@@ -196,9 +205,9 @@ class RBender::State
     if @is_global
       raise 'Global state doesn\'t support :keyboard method'
     end
-    @keyboard_block         = RBender::Keyboard.new
-    @keyboard_block.session = @session
-    @keyboard_block.instance_eval(&keyboard_block)
+    @keyboard         = RBender::Keyboard.new
+    @keyboard.session = @session
+    @keyboard.instance_eval(&keyboard_block)
   end
 
   #initialize helper methods
@@ -207,16 +216,24 @@ class RBender::State
     instance_eval(&helpers_block)
   end
 
-  def photo(&action)
+  def photo(&block)
     if @photo_action.nil?
-      @photo_action = action
+      @photo_block = block
     else
-      raise 'Too many image processors!'
+      raise 'Image block already defined'
     end
   end
 
   alias image photo
   alias picture photo
+
+  def contact(&block)
+    if @contact_block.nil?
+      @contact_block = block
+    else
+      raise 'Contact block already defined'
+    end
+  end
 
   def command(command, &action)
     if @commands_blocks.include? command

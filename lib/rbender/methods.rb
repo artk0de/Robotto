@@ -14,7 +14,7 @@ class RBender::Methods
 
   # Set message user gets while keyboard has invoked
   def set_response(new_response)
-    @keyboard_block.set_response(new_response)
+    @keyboard.set_response(new_response)
   end
 
   # Returns session hash

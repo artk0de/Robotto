@@ -12,7 +12,7 @@ class RBender::KeyboardInline
     @markup           = []
     @markup_tg        = []
     @session          = session
-    @keyboard_block   = block
+    @keyboard         = block
   end
 
   def session
@@ -39,6 +39,11 @@ class RBender::KeyboardInline
                                                                            switch_inline_query: inline_query)
   end
 
+  def button_game(name, description, callback_game)
+    @buttons_inline[name] = Telegram::Bot::Types::InlineKeyboardButton.new(text:                description,
+                                                                           callback_game: callback_game)
+  end
+
   # def button_callback
 
   def button_pay(name, description)
@@ -52,7 +57,7 @@ class RBender::KeyboardInline
   end
 
   def invoke
-    instance_eval(&@keyboard_block)
+    instance_eval(&@keyboard)
   end
 
   def build
