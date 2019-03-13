@@ -24,7 +24,18 @@ class RBender::Methods
 
   # Returns message object
   def message
-    @message
+    case @message
+    when Telegram::Bot::Types::CallbackQuery
+      @message.message
+    when Telegram::Bot::Types::Message
+      @message
+    else
+      @message
+    end
+  end
+
+  def chat_id
+    message().chat.id
   end
 
   def switch(state_to)
@@ -38,7 +49,7 @@ class RBender::Methods
   # Must be called from any inline keyboard state
 
   def send_message(text:,
-                   chat_id: @message.from.id,
+                   chat_id: chat_id(),
                    parse_mode: nil,
                    disable_web_page_preview: nil,
                    disable_notification: nil,
@@ -59,8 +70,8 @@ class RBender::Methods
 
   def edit_message_text(inline_message_id: nil,
                         text:,
-                        chat_id: @message.from.id,
-                        message_id: @message.message.message_id,
+                        chat_id: chat_id(),
+                        message_id: message().message_id,
                         parse_mode: nil,
                         disable_web_page_preview: nil,
                         reply_markup: nil)
@@ -78,8 +89,8 @@ class RBender::Methods
 
   def edit_message_caption(inline_message_id: nil,
                            caption: nil,
-                           chat_id: @message.from.id,
-                           message_id: @message.message.message_id,
+                           chat_id: chat_id(),
+                           message_id: message().message_id,
                            reply_markup: nil)
     if text.strip.empty?
       raise "A text can't be empty or consists of space symbols only"
@@ -91,8 +102,8 @@ class RBender::Methods
                            reply_markup:      reply_markup
   end
 
-  def edit_message_reply_markup(chat_id: @message.from.id,
-                                message_id: @message.message.message_id,
+  def edit_message_reply_markup(chat_id: chat_id(),
+                                message_id: message().message_id,
                                 inline_message_id: nil,
                                 reply_markup: nil)
     @api.edit_message_reply_markup chat_id:           chat_id,
@@ -101,8 +112,20 @@ class RBender::Methods
                                    reply_markup:      reply_markup
   end
 
-  def delete_message(chat_id: @message.from.id,
-                     message_id:)
+  def answer_callback_query(callback_query_id: @message.id,
+                            text: nil,
+                            show_alert: nil,
+                            url: nil,
+                            cache_time: nil)
+    @api.answer_callback_query(callback_query_id: callback_query_id,
+                               text: text,
+                               show_alert: show_alert,
+                               url: url,
+                               cache_time: cache_time)
+  end
+
+  def delete_message(chat_id: chat_id(),
+                     message_id: message().message_id)
     @api.delete_message(chat_id:    chat_id,
                         message_id: message_id)
   end
@@ -123,7 +146,7 @@ class RBender::Methods
   end
 
   def forward_message(chat_id:,
-                      from_chat_id: @message.from.id,
+                      from_chat_id: chat_id(),
                       disable_notification: false,
                       message_id:)
     @api.forward_message(chat_id:              chat_id,
@@ -132,7 +155,7 @@ class RBender::Methods
                          message_id:           message_id)
   end
 
-  def send_photo(chat_id: @message.from.id,
+  def send_photo(chat_id: chat_id(),
                  photo:,
                  caption: nil,
                  disable_notification: false,
@@ -146,7 +169,7 @@ class RBender::Methods
                     reply_markup:         reply_markup)
   end
 
-  def send_audio(chat_id: @message.from.to,
+  def send_audio(chat_id: chat_id(),
                  audio:,
                  caption: nil,
                  duration: nil,
@@ -167,7 +190,7 @@ class RBender::Methods
                     reply_markup:         reply_markup)
   end
 
-  def send_media_group(chat_id: @message.from.to,
+  def send_media_group(chat_id: chat_id(),
                        media:,
                        disable_notification: nil,
                        reply_to_message_id: nil)
@@ -177,7 +200,7 @@ class RBender::Methods
                           reply_to_message_id:  reply_to_message_id)
   end
 
-  def send_document(chat_id: @message.from.id,
+  def send_document(chat_id: chat_id(),
                     document:,
                     caption: nil,
                     disable_notification: false,
@@ -191,7 +214,7 @@ class RBender::Methods
                        reply_markup:         reply_markup)
   end
 
-  def send_sticker(chat_id: @message.from.id,
+  def send_sticker(chat_id: chat_id(),
                    sticker:,
                    caption: nil,
                    disable_notification: false,
@@ -205,7 +228,7 @@ class RBender::Methods
                       reply_markup:         reply_markup)
   end
 
-  def send_video(chat_id: @message.from.id,
+  def send_video(chat_id: chat_id(),
                  video:,
                  width: nil,
                  height: nil,
@@ -225,7 +248,7 @@ class RBender::Methods
                     reply_markup:         reply_markup)
   end
 
-  def send_voice(chat_id: @message.from.to,
+  def send_voice(chat_id: chat_id(),
                  voice:,
                  caption: nil,
                  duration: nil,
@@ -242,7 +265,7 @@ class RBender::Methods
                     reply_markup:         reply_markup)
   end
 
-  def send_video_note(chat_id: @message.from.id,
+  def send_video_note(chat_id: chat_id(),
                       video_note:,
                       length: nil,
                       duration: nil,
@@ -258,7 +281,7 @@ class RBender::Methods
                          reply_markup:         reply_markup)
   end
 
-  def send_location(chat_id: @message.from.to,
+  def send_location(chat_id: chat_id(),
                     latitude:,
                     longitude:,
                     disable_notification: false,
@@ -273,7 +296,7 @@ class RBender::Methods
                        reply_markup:         reply_markup)
   end
 
-  def send_venue(chat_id: @message.from.to,
+  def send_venue(chat_id: chat_id(),
                  latitude:,
                  longitude:,
                  title:,
@@ -294,7 +317,7 @@ class RBender::Methods
                     reply_markup:         reply_markup)
   end
 
-  def send_contact(chat_id: @message.from.to,
+  def send_contact(chat_id: chat_id(),
                    phone_number:,
                    first_name:,
                    last_name: nil,
@@ -311,13 +334,13 @@ class RBender::Methods
                       reply_markup:         reply_markup)
   end
 
-  def send_chat_action(chat_id: @message.from.id,
+  def send_chat_action(chat_id: chat_id(),
                        action:)
     @api.send_chat_action(chat_id: chat_id,
                           action:  action)
   end
 
-  def get_user_profile_photos(chat_id: @message.from.id,
+  def get_user_profile_photos(chat_id: chat_id(),
                               offset: nil,
                               limit: nil)
     @api.get_user_profile_photos(chat_id: chat_id,
@@ -358,8 +381,8 @@ class RBender::Methods
                          user_id: user_id)
   end
 
-  def upload_file(path: fkile_path)
-    full_path = "#{Dir.pwd}/public/#{path}"
+  def upload_file(file_path)
+    full_path = "#{Dir.pwd}/public/#{file_path}"
     Faraday::UploadIO.new(full_path, "multipart/form-data")
   end
 
@@ -389,7 +412,7 @@ class RBender::Methods
 
   alias download download_file
 
-  def send_invoice(chat_id: @message.from.id, title:, description:,
+  def send_invoice(chat_id: chat_id(), title:, description:,
                    payload:, provider_token:, start_parameter:, currency:,
                    prices:, provider_data: nil, photo_url: nil, photo_size: nil,
                    photo_width: nil, need_name: nil, need_phone_number: nil, need_email: nil,
@@ -427,7 +450,7 @@ class RBender::Methods
                                ok:                ok)
   end
 
-  def answer_pre_checkout_query(pre_checkout_query_id: @message.id, ok:, error_message: nil)
+  def answer_pre_checkout_query(pre_checkout_query_id: message().id, ok:, error_message: nil)
     @api.answer_pre_checkout_query(pre_checkout_query_id: pre_checkout_query_id,
                                    error_message:         error_message,
                                    ok:                    ok)

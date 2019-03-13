@@ -40,7 +40,7 @@ class RBender::KeyboardInline
   end
 
   def button_game(name, description, callback_game)
-    @buttons_inline[name] = Telegram::Bot::Types::InlineKeyboardButton.new(text:                description,
+    @buttons_inline[name] = Telegram::Bot::Types::InlineKeyboardButton.new(text:          description,
                                                                            callback_game: callback_game)
   end
 
@@ -48,7 +48,7 @@ class RBender::KeyboardInline
 
   def button_pay(name, description)
     @buttons_pay[name] = Telegram::Bot::Types::InlineKeyboardButton.new(text: description,
-                                                                        pay: true)
+                                                                        pay:  true)
   end
 
   # Adds a line to markup

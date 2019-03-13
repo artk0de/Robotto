@@ -1,4 +1,4 @@
-require 'rbender/sessionmanager'
+require 'rbender/session_manager'
 require 'rbender/keyboard_inline'
 require 'rbender/mongo_client'
 require 'rbender/state'
@@ -90,10 +90,9 @@ class RBender::Base
   private
 
   def process_message(message)
-    chat_id = message.from.id # Unique chat ID
+    chat_id = message&.from&.id || message&.chat&.id # Unique chat ID
 
     session = session(chat_id, message)
-
 
     state        = session[:state] # User's state
     state_block  = @states[state] # Block of the state
@@ -101,6 +100,7 @@ class RBender::Base
                                       @api,
                                       session,
                                       &state_block
+
     state_object.instance_eval(&@global_state) unless @global_state.nil?
     state_object.build
     state_object.invoke
@@ -158,16 +158,22 @@ class RBender::Base
                   state_stack:            [],
                   keyboard_switchers:     {},
                   keyboard_switch_groups: {},
-                  lang:                   :default
+                  lang:                   :default,
+                  chat_id:                chat_id
       }
     end
 
-    session[:user] = {
-        chat_id:    chat_id,
-        first_name: message.from.first_name,
-        last_name:  message.from.last_name,
-        user_name:  message.from.username
-    }
+    if (message.try(:chat) rescue nil)
+      session[:chat] = {
+          chat_id:     message.chat.id,
+          description: message.chat.description,
+          invite_link: message.chat.invite_link,
+          title:       message.chat.title,
+          first_name:  message.chat.first_name,
+          last_name:   message.chat.last_name,
+          user_name:   message.chat.username
+      }
+    end
 
     session[:user].freeze # User's data must be immutable!
 

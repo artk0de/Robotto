@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'rbender'
-  s.version     = '0.7.0'
-  s.date        = '2019-03-07'
+  s.version     = '0.7.3'
+  s.date        = '2019-03-09'
   s.description = 'Gem provides domain specific language for messengers bot creation.'
   s.authors     = %w(Arthur Korochansky)
   s.email       = "art2rik.desperado@gmail.com"
@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
                    "lib/rbender/keyboard.rb",
                    "lib/rbender/keyboard_inline.rb",
                    "lib/rbender/mongo_client.rb",
-                   "lib/rbender/sessionmanager.rb",
+                   "lib/rbender/session_manager.rb",
                    "lib/rbender/state.rb",
 									 "lib/rbender/methods.rb",
 									 "lib/rbender/fly_settings.rb",

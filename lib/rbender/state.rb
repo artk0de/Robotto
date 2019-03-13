@@ -3,6 +3,7 @@ class RBender::State
     @message          = message
     @api              = api
     @session          = session
+    @chat_id          = @session[:chat_id]
     @methods          = RBender::Methods.new(message, api, session)
     @state_block      = state_block
 
@@ -140,7 +141,7 @@ class RBender::State
   end
 
   def invoke_keyboard
-    @api.send_message(chat_id:      message.from.id,
+    @api.send_message(chat_id:      @chat_id,
                       text:         @keyboard.response,
                       reply_markup: @keyboard.markup_tg)
   end

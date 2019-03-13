@@ -17,7 +17,7 @@ module RBender
     end
 
     def save_session(session)
-      @sessions_mongo.update_one({ chat_id: session[:user][:chat_id] },
+      @sessions_mongo.update_one({ chat_id: session[:chat_id] },
                                  { '$set' => { session: session } },
                                  { upsert: true })
     end
