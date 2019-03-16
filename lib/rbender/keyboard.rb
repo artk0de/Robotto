@@ -8,9 +8,11 @@ class RBender::Keyboard
                 :markup_tg,
                 :markup_final,
                 :switch_groups,
-                :session
+                :session,
+                :message
 
-  def initialize
+  def initialize(message)
+    @message             = message
     @actions             = {}
     @markup              = []
     @localizations       = {}

@@ -1,8 +1,11 @@
 class RBender::KeyboardInline
   attr_accessor :markup_tg,
-                :buttons_actions
+                :buttons_actions,
+                :message,
+                :session
 
-  def initialize(name, session, block)
+  def initialize(name, message, session, block)
+    @message          = message
     @name             = name
     @buttons_callback = {}
     @buttons_inline   = {}

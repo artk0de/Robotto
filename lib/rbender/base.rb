@@ -78,6 +78,7 @@ class RBender::Base
     end
   end
 
+  alias screen state
 
   def global(&block)
     if @global_state

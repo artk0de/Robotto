@@ -171,6 +171,7 @@ class RBender::State
   # adds inline keyboard
   def keyboard_inline(inline_keyboard_name, &inline_keyboard_block)
     @inline_keyboards_blocks[inline_keyboard_name] = RBender::KeyboardInline.new(inline_keyboard_name,
+                                                                                 @message,
                                                                                  @session,
                                                                                  inline_keyboard_block)
   end
@@ -206,7 +207,7 @@ class RBender::State
     if @is_global
       raise 'Global state doesn\'t support :keyboard method'
     end
-    @keyboard         = RBender::Keyboard.new
+    @keyboard         = RBender::Keyboard.new(@message)
     @keyboard.session = @session
     @keyboard.instance_eval(&keyboard_block)
   end
