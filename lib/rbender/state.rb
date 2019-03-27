@@ -100,7 +100,7 @@ class RBender::State
   def process_text_message
     unless @keyboard.nil? # if state has keyboard
       @keyboard.instance_eval(&@helpers_block) unless @helpers_block.nil?
-      keyboard.instance_eval(&@helpers_global_block) unless @helpers_global_block.nil?
+      @keyboard.instance_eval(&@helpers_global_block) unless @helpers_global_block.nil?
       build_keyboard
 
       @keyboard.markup_final.each do |btn, final_btn|
@@ -282,11 +282,11 @@ class RBender::State
   # Returns Inline keyboard object by name
   def inline_markup(name)
     raise "Keyboard #{name} doesn't exists!" unless @inline_keyboards_blocks.member? name
-    keyboard = @inline_keyboards_blocks[name]
-    keyboard.instance_eval(&@helpers_block) unless @helpers_block.nil?
-    keyboard.instance_eval(&@helpers_global_block) unless @helpers_global_block.nil?
-    keyboard.build
-    keyboard.markup_tg
+    kb = @inline_keyboards_blocks[name]
+    kb.instance_eval(&@helpers_block) unless @helpers_block.nil?
+    kb.instance_eval(&@helpers_global_block) unless @helpers_global_block.nil?
+    kb.build
+    kb.markup_tg
   end
 
   def pre_checkout(&block)

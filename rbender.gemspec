@@ -25,5 +25,5 @@ Gem::Specification.new do |s|
 									 "templates/Gemfile"]
   s.metadata    = { "source_code_uri" => "https://github.com/art2rik/rbender" }
   s.executables << "rbender"
-	s.required_ruby_version = '>= 2.0.0'
+	s.required_ruby_version = '>= 2.4.0'
 end
