@@ -14,6 +14,7 @@ class RBender::State
     @before_block            = nil
     @text_block              = nil
     @helpers_block           = nil
+    @helpers_global_block    = nil
     @pre_checkout_block      = nil
     @checkout_block          = nil
     @shipping_block          = nil
@@ -99,6 +100,7 @@ class RBender::State
   def process_text_message
     unless @keyboard.nil? # if state has keyboard
       @keyboard.instance_eval(&@helpers_block) unless @helpers_block.nil?
+      keyboard.instance_eval(&@helpers_global_block) unless @helpers_global_block.nil?
       build_keyboard
 
       @keyboard.markup_final.each do |btn, final_btn|
@@ -122,7 +124,7 @@ class RBender::State
     keyboard.invoke unless keyboard.nil?
 
     unless keyboard.nil?
-      unless keyboard.buttons_actions[action].nil?
+      if keyboard.buttons_actions[action]
         instance_eval(&keyboard.buttons_actions[action])
       else
         raise "There is no action called '#{action}'"
@@ -214,7 +216,12 @@ class RBender::State
 
   #initialize helper methods
   def helpers(&helpers_block)
-    @helpers_block = helpers_block
+    if @helpers_block
+      @helpers_block = helpers_block
+    else
+      @helpers_global_block = helpers_block
+    end
+
     instance_eval(&helpers_block)
   end
 
@@ -277,6 +284,7 @@ class RBender::State
     raise "Keyboard #{name} doesn't exists!" unless @inline_keyboards_blocks.member? name
     keyboard = @inline_keyboards_blocks[name]
     keyboard.instance_eval(&@helpers_block) unless @helpers_block.nil?
+    keyboard.instance_eval(&@helpers_global_block) unless @helpers_global_block.nil?
     keyboard.build
     keyboard.markup_tg
   end

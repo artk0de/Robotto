@@ -15,6 +15,10 @@ class RBender::Base
 
   public
 
+  def self.api
+    @@api
+  end
+
   def initialize
     @states       = {}
     @global_state = nil
@@ -31,6 +35,7 @@ class RBender::Base
     puts "Bot is running...".green
     Telegram::Bot::Client.run(@token) do |bot|
       @api = bot.api
+      @@api = bot.api
 
       unless @modules_block.nil?
         instance_exec(@api, @mongo_client, &@modules_block)
@@ -176,7 +181,7 @@ class RBender::Base
       }
     end
 
-    session[:user].freeze # User's data must be immutable!
+    session[:chat].freeze # User's data must be immutable!
 
     if is_start_message? message
       session[:state]       = :start
