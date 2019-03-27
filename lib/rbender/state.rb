@@ -130,7 +130,7 @@ class RBender::State
         raise "There is no action called '#{action}'"
       end
     else
-      edit_message_text text: "deleted"
+      edit_message_text text: ":)"
     end
   end
 
@@ -217,9 +217,9 @@ class RBender::State
   #initialize helper methods
   def helpers(&helpers_block)
     if @helpers_block
-      @helpers_block = helpers_block
-    else
       @helpers_global_block = helpers_block
+    else
+      @helpers_block = helpers_block
     end
 
     instance_eval(&helpers_block)
