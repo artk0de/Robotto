@@ -37,7 +37,7 @@ class OptParser
 				exit
 			end
 
-			opts.on("-d", "Set bot's working directory") do |dir|
+			opts.on("-dDIR", "--directory=DIR", "Set bot's working directory") do |dir|
 				if File.directory?(dir)
 			  	options.directory = dir
 				else
@@ -96,13 +96,14 @@ def create_project(options, args)
 end
 
 def run(options, args)
+		wd = options.directory || Dir.pwd
+		Dir.chdir(wd)
+
 		begin
-		settings = RBender::ConfigHandler.settings
+			settings = RBender::ConfigHandler.settings
 		rescue
 			puts 'Main file or config are missing!'
 		end
-		wd = options.directory || Dir.pwd
-		Dir.chdir(wd)
 		title = RBender::ConfigHandler.underscore(settings['title'])
 
 
