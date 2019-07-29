@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'rbender'
-  s.version     = '0.7.6'
-  s.date        = '2019-03-28'
+  s.version     = '0.9.0'
+  s.date        = '2019-07-14'
   s.description = 'Gem provides domain specific language for messengers bot creation.'
   s.authors     = %w(Arthur Korochansky)
   s.email       = "art2rik.desperado@gmail.com"
@@ -25,5 +25,5 @@ Gem::Specification.new do |s|
 									 "templates/Gemfile"]
   s.metadata    = { "source_code_uri" => "https://github.com/art2rik/rbender" }
   s.executables << "rbender"
-	s.required_ruby_version = '>= 2.4.0'
+	s.required_ruby_version = '>= 2.5.1'
 end
