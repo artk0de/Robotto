@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-gem 'telegram-bot-ruby'
-gem 'colorize'
-gem 'mongo'
-gem 'faraday'
 gem 'dry-struct'
 gem 'dry-types'
+
+gem 'mongoid'
+gem 'faraday'
+gem 'activesupport'

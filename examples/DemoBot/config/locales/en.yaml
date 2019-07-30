@@ -1,0 +1,9 @@
+screens:
+  start:
+    welcome: Welcome to RBender demo bot. Please choose your language to continue
+  main:
+    commands: Please send a command to test RBender feature. Commands list attached below
+keyboards:
+  buttons:
+    ru: Russian
+    en: English

@@ -1,0 +1,13 @@
+title: DemoBot
+development:
+  token: '193177596:AAGxlGvBj_YrF7jMaxz3V4o4XnUm8kOZ7V8'
+  mongo_url: mongodb://localhost:27017
+  log_error: true
+  log_users: false
+production:
+  token: '193177596:AAGxlGvBj_YrF7jMaxz3V4o4XnUm8kOZ7V8'
+  mongo_url: mongodb://localhost:27017
+  log_error: true
+  log_users: true
+  ignore_exceptions: true
+
