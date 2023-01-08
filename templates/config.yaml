@@ -1,9 +1,0 @@
----
-title: SampleName
-mongo: mongodb://localhost:27017
-development:
-  token: insert your token here
-  log_error: true
-  log_user: false
-production:
-  token: insert your token here

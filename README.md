@@ -278,8 +278,9 @@ YourModule.set_mongo(mongo)
 end
 ```
 RBender use [telegram-bot-ruby](https://github.com/atipugin/telegram-bot-ruby) api driver and [MongoDB ruby](https://github.com/mongodb/mongo-ruby-driver) driver. Also you can get access to MongoDB driver like this:
+
 ```ruby
-RBender::MongoClient.client
+RBender::Mongo.client
 ```
 ## Download/ Upload 
 ## Methods

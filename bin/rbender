@@ -1,169 +1,117 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'colorize'
+require 'gli'
+require 'hacer'
 require 'rbender'
-require 'ostruct'
-require 'optparse'
-require 'fileutils'
+require 'rbender/utils'
 
-class OptParser
+class RBenderApp
+  extend GLI::App
+  PROJECT_ROOT_REQUIRED_COMMANDS = [:server, :schema]
 
-	MODE_DEV  = "dev"
-	MODE_PROD = "prod"
+  program_desc 'RBender app launcher'
+  version RBender::VERSION
+  subcommand_option_handling :normal
+  sort_help :manually
 
-	def self.parse(args)
-		options       = OpenStruct.new
-		options.mode  = "dev"
-		options.name  = "prod"
-		options.start = false
+  arg :mode, :optional
+  default_value 'dev'
+  flag [:m, :mode],
+    arg_name: 'env',
+    must_match: ['prod', 'dev', 'staging'],
+    desc: 'Environment mode(available: prod, dev, staging)'
+  flag [:d, :dir], arg_name: 'dir', desc: 'Project\'s working directory'
 
-		global = OptionParser.new do |opts|
-			opts.banner = "Usage: rbender [options]"
-			opts.separator ""
-			opts.separator "Common options:"
-			opts.on_tail("-v", "--version", "Prints current RBender version") do
-				puts "RBender version: #{Gem.loaded_specs["rbender"].version}"
-				puts "by art2rik (https://github.com/art2rik)"
-			end
+  pre do |global_opts, command, _opts, _args|
+    set_work_dir!(global_opts)
+    not_a_project_root_message! if project_required_command?(command) && !project_subfolder?
 
-			opts.on("-m", "--mode [MODE]", [MODE_DEV, MODE_PROD],
-							"Sets running mode (default 'dev')") do |mode|
-				options.mode = mode
-				unless mode != MODE_DEV or mode != MODE_PROD
-					raise ArgumentError, "Available modes are dev/prod"
-				end
-			end
+    true
+  end
 
-			opts.on_tail("-h", "--help", "Shows help message") do
-				puts opts
-				exit
-			end
+  desc 'Creates new RBender project'
+  arg '<<ProjectName>>'
+  command :new do |c|
+    c.action do |global_opts, _, args|
+      if args[0].nil?
+        puts "Project name should be provided!\n".red
+        puts 'Tip: ' + 'rbender new bot_name'.cyan
+        next
+      end
+      params =
+        {
+          project_name: args[0],
+          rbender_path: File.expand_path('..', __dir__),
+        }
+      params.merge!(global_opts.slice(:dir)).compact
 
-			opts.on("-dDIR", "--directory=DIR", "Set bot's working directory") do |dir|
-				if File.directory?(dir)
-			  	options.directory = dir
-				else
-					raise ArgumentError, "#{dir} isn't working directory"
-				end
-			end
+      boilerplate = RBender::Utils::Boilerplate.new(params)
+      boilerplate.generate_project!
 
-		end
+      puts "\n" + boilerplate.work_dir.italic
+    end
+  end
 
-		global.order!
-		# subcommands[args.shift].order!
+  desc 'Starts bot server'
+  command :server do |c|
+    c.action do |_global_opts, _opts, _args|
+      # RBender::Utils::Launcher.start!(options)
+      puts 'Started(no)'
+    end
+  end
 
-		global.parse! args
+  desc "Telegram Bot Api Schema operations(print #{'rbender help schema'.cyan} for more)"
+  command :schema do |schema|
+    schema.desc 'Updates or restores Telegram Bot Api schema from GitHub(https://ark0f.github.io/tg-bot-api/custom.json)'
+    schema.command :update do |update|
+      update.action do
+        RBender::Support::TelegramBotApiSchema.new.update!
+        puts "Telegram Bot Api Schema was successfully updated!\n".green
 
-		options
-	end
+        RBender::Support::TelegramBotApiSchema.print_schema_version
+      end
+    end
 
+    schema.desc 'Prints Schema info'
+    schema.command :info do |info|
+      info.action do
+        RBender::Support::TelegramBotApiSchema.print_schema_version
+      end
+    end
+  end
+
+  desc 'Outputs current gem version and author'
+  command :about do |c|
+    c.action { RBender.print_about }
+  end
+
+  class << self
+    def not_a_project_root_message!
+      raise 'Not an RBender project root directory!'
+    end
+
+    def project_required_command?(command)
+      ([command.name, command.parent&.name].compact & PROJECT_ROOT_REQUIRED_COMMANDS).any?
+    end
+    def project_subfolder?
+      true
+    end
+
+    def set_work_dir!(global_opts)
+      workdir_new =
+        if global_opts[:dir] && global_opts[:dir][0] == '/'
+          global_opts[:dir]
+        elsif global_opts[:dir]
+          File.expand_path(global_opts[:dir], Dir.getwd)
+        else
+          return
+        end
+
+      FileUtils.chdir(workdir_new)
+    end
+  end
 end
 
-def create_project(options, args)
-	unless args[0] =~ /\w{3,16}/ and args[1] == nil
-		raise ArgumentError, "Name must be from 3 to 16 english letters without spaces"
-	end
-
-	name = args[0]
-	name_undrscr = RBender::ConfigHandler.underscore(name)
-
-	begin
-	FileUtils.mkdir name
-	rescue
-		puts "Folder #{name} already exists"
-		exit
-	end
-
-	project_dir = "#{Dir.getwd}/#{name}"
-	FileUtils.chdir name
-	FileUtils.mkdir "locales"
-	FileUtils.mkdir "lib"
-	FileUtils.mkdir "public"
-
-	FileUtils.chdir __dir__
-	FileUtils.chdir "../templates"
-	FileUtils.cp_r "locales", project_dir
-	FileUtils.cp_r "config.yaml", project_dir
-	FileUtils.cp_r "Gemfile", project_dir
-	FileUtils.cp_r "sample.rb", "#{project_dir}/#{name_undrscr}.rb"
-
-	#TODO: change name in config
-
-	RBender::ConfigHandler.config_path = project_dir
-	config = RBender::ConfigHandler.settings
-	config['title'] = name
-	config.save
-
-	puts "Project #{name} successfully created"
-end
-
-def run(options, args)
-		wd = options.directory || Dir.pwd
-		Dir.chdir(wd)
-
-		begin
-			settings = RBender::ConfigHandler.settings
-		rescue
-			puts 'Main file or config are missing!'
-		end
-		title = RBender::ConfigHandler.underscore(settings['title'])
-
-
-		recursive_require("#{Dir.pwd}/lib/")
-		load "#{wd}/#{title}.rb"
-		recursive_load("#{Dir.pwd}/screens/")
-		recursive_load("#{Dir.pwd}/states/")
-
-
-		bot_frame = RBender.instance
-
-		#TODO: add mode setting
-		RBender::ConfigHandler.config_path = wd
-		bot_frame.set_params(settings)
-		bot_frame.run!
-end
-
-def recursive_require(file_path)
-	return unless Dir.exist? file_path
-	Dir.foreach(file_path) do |file|
-		next if file == "." || file == ".."
-		if File.extname(file) == ".rb"
-			require "#{file_path}/#{file}"
-		elsif File.directory? "#{file_path}/#{file}"
-			recursive_require("#{file_path}#{file}")
-		end
-	end
-end
-
-def recursive_load(file_path)
-	return unless Dir.exist? file_path
-	Dir.foreach(file_path) do |file|
-		next if file == "." || file == ".."
-		if File.extname(file) == ".rb"
-			load "#{file_path}/#{file}"
-		elsif File.directory? "#{file_path}/#{file}"
-			recursive_load("#{file_path}#{file}")
-		end
-	end
-end
-# --- EXECUTE CODE ______
-begin
-	options = OptParser.parse(ARGV.dup)
-	command = ARGV.shift
-
-	case command
-		when 'new'
-			create_project(options, ARGV.dup)
-		when "start"
-			run(options, ARGV.dup)
-	else
-		puts "Wrong command #{command}"
-	end
-rescue ArgumentError => e
-	puts "Wrong argument: #{e}"
-	puts "Try 'help' command"
-end
-
-
-
-
-
-
+exit RBenderApp.run(ARGV)
