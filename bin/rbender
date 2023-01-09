@@ -25,7 +25,7 @@ class RBenderCLI
   flag [:d, :dir], arg_name: 'dir', desc: 'Project\'s working directory'
 
   pre do |global_opts, command, _opts, _args|
-    set_work_dir!(global_opts)
+    set_work_dir!(global_opts[:dir]) if global_opts[:dir]
     find_root_dir! if project_required_command?(command)
 
     true
@@ -37,7 +37,7 @@ class RBenderCLI
     c.action do |global_opts, _, args|
       if args[0].nil?
         puts "Project name should be provided!\n".red
-        puts 'Tip: ' + 'rbender new bot_name'.cyan
+        puts '💡Tip: ' + 'rbender new bot_name'.cyan
         next
       end
       params =
@@ -106,22 +106,12 @@ class RBenderCLI
     def project_required_command?(command)
       ([command.name, command.parent&.name].compact & PROJECT_ROOT_REQUIRED_COMMANDS).any?
     end
-    def project_subfolder?
-      File.exist?(RBender::Support::ConfigHandler::CONFIG_PATH)
-    end
 
-    def set_work_dir!(global_opts)
-      return unless global_opts[:dir]
+    def set_work_dir!(dir)
+      dir = File.expand_path(dir, Dir.getwd) unless dir[0] == '/'
+      raise "PATH NOT FOUND: #{dir.italic}".red unless Dir.exist?(dir)
 
-      workdir_new =
-        if global_opts[:dir][0] == '/'
-          global_opts[:dir]
-        else
-          File.expand_path(global_opts[:dir], Dir.getwd)
-        end
-      raise "PATH NOT FOUND: #{workdir_new.italic}".red unless Dir.exist?(workdir_new)
-
-      FileUtils.chdir(workdir_new)
+      FileUtils.chdir(dir)
     end
   end
 end
