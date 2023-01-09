@@ -17,18 +17,26 @@ module RBender
       end
 
       def config
-        @config = YAML.load(File.read(@config_path))
+        return @config if @config
+
+        @config = YAML.load(File.read(config_path))
         @config.define_singleton_method(:save) do
           File.write(Support::ConfigHandler.config_path, to_yaml)
         end
 
         @config
       rescue
-        raise 'Config file doesn\'t exists!'.red
+        raise 'Config file not found!'.bold.red
       end
 
+      def config_exist?
+        File.exist?(CONFIG_PATH) && config['title']
+      end
+
+      # Returns absolute config's path.
+      # @return [String]
       def config_path
-        @config_path
+        @config_path || CONFIG_PATH
       end
 
       def config_path=(dir)

@@ -7,7 +7,7 @@ require 'hacer'
 require 'rbender'
 require 'rbender/utils'
 
-class RBenderApp
+class RBenderCLI
   extend GLI::App
   PROJECT_ROOT_REQUIRED_COMMANDS = [:server, :schema]
 
@@ -89,23 +89,18 @@ class RBenderApp
 
   class << self
     def find_root_dir!
-      config_path = RBender::Support::ConfigHandler::CONFIG_PATH
-      path = Dir.getwd.split('/')
+      original_dir = Dir.getwd
+      path = original_dir.split('/')
       path[0] = '/'
       loop do
-        if File.exist?(config_path)
-          return true
-        end
+        return true if RBender::Support::ConfigHandler.config_exist?
+
         path.delete_at(-1)
         break if path.empty?
-
         Dir.chdir(File.join(path))
       end
-      not_a_project_dir_message!
-    end
 
-    def not_a_project_dir_message!
-      raise 'Not an RBender project directory!'.red
+      raise "Not an RBender project directory!\n".red + original_dir.italic
     end
 
     def project_required_command?(command)
@@ -116,13 +111,13 @@ class RBenderApp
     end
 
     def set_work_dir!(global_opts)
+      return unless global_opts[:dir]
+
       workdir_new =
-        if global_opts[:dir] && global_opts[:dir][0] == '/'
+        if global_opts[:dir][0] == '/'
           global_opts[:dir]
-        elsif global_opts[:dir]
-          File.expand_path(global_opts[:dir], Dir.getwd)
         else
-          return
+          File.expand_path(global_opts[:dir], Dir.getwd)
         end
       raise "PATH NOT FOUND: #{workdir_new.italic}".red unless Dir.exist?(workdir_new)
 
@@ -131,4 +126,4 @@ class RBenderApp
   end
 end
 
-exit RBenderApp.run(ARGV)
+exit RBenderCLI.run(ARGV)
