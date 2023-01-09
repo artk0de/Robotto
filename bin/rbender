@@ -26,7 +26,7 @@ class RBenderApp
 
   pre do |global_opts, command, _opts, _args|
     set_work_dir!(global_opts)
-    not_a_project_root_message! if project_required_command?(command) && !project_subfolder?
+    find_root_dir! if project_required_command?(command)
 
     true
   end
@@ -88,15 +88,31 @@ class RBenderApp
   end
 
   class << self
-    def not_a_project_root_message!
-      raise 'Not an RBender project root directory!'
+    def find_root_dir!
+      config_path = RBender::Support::ConfigHandler::CONFIG_PATH
+      path = Dir.getwd.split('/')
+      path[0] = '/'
+      loop do
+        if File.exist?(config_path)
+          return true
+        end
+        path.delete_at(-1)
+        break if path.empty?
+
+        Dir.chdir(File.join(path))
+      end
+      not_a_project_dir_message!
+    end
+
+    def not_a_project_dir_message!
+      raise 'Not an RBender project directory!'.red
     end
 
     def project_required_command?(command)
       ([command.name, command.parent&.name].compact & PROJECT_ROOT_REQUIRED_COMMANDS).any?
     end
     def project_subfolder?
-      true
+      File.exist?(RBender::Support::ConfigHandler::CONFIG_PATH)
     end
 
     def set_work_dir!(global_opts)
@@ -108,6 +124,7 @@ class RBenderApp
         else
           return
         end
+      raise "PATH NOT FOUND: #{workdir_new.italic}".red unless Dir.exist?(workdir_new)
 
       FileUtils.chdir(workdir_new)
     end
