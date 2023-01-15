@@ -1,5 +1,4 @@
 .idea/*
 *.gem
 .DS_Store
-lib/.DS_Store
-bin/old_script
+*/.DS_Store

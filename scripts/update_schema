@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
-require 'rbender/support/telegram_bot_api_schema'
+require 'robotto'
 
-SCHEMA_PATH = 'boilerplates/config/schema/telegram_bot_api_schema.json'
-
-RBender::Support::TelegramBotApiSchema.schema_file_path = SCHEMA_PATH
-RBender::Support::TelegramBotApiSchema.new.update!
+Dir.chdir('boilerplates')
+Robotto::Support::TelegramBotApiSchema.new.update!
+puts "Schema updated!".green
+puts Robotto::Support::TelegramBotApiSchema.print_schema_version

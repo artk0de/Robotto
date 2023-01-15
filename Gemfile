@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rbender', path: '/Users/artk0re/Projects/RBender'
+gem 'robotto', path: '/Users/artk0re/Projects/Robotto'
 
 gem 'telegram-bot-ruby'
 gem 'colorize'
@@ -15,3 +15,5 @@ gem 'gli'
 gem 'hacer'
 gem 'pry', require: false
 gem 'rspec'
+gem 'concurrent-ruby-edge', '~> 0.6.0', require: 'concurrent-edge'
+gem 'zeitwerk'

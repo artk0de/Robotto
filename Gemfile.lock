@@ -1,8 +1,9 @@
 PATH
   remote: .
   specs:
-    rbender (1.0.1)
+    robotto (1.0.1)
       colorize
+      concurrent-ruby-edge (~> 0.6.0)
       did_you_mean (>= 1.6.1)
       gli
       hacer
@@ -31,6 +32,8 @@ GEM
       descendants_tracker (~> 0.0.1)
     colorize (0.8.1)
     concurrent-ruby (1.1.10)
+    concurrent-ruby-edge (0.6.0)
+      concurrent-ruby (~> 1.1.6)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     did_you_mean (1.6.3)
@@ -95,6 +98,7 @@ GEM
       axiom-types (~> 0.1)
       coercible (~> 1.0)
       descendants_tracker (~> 0.0, >= 0.0.3)
+    zeitwerk (2.6.6)
 
 PLATFORMS
   ruby
@@ -102,6 +106,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   colorize
+  concurrent-ruby-edge (~> 0.6.0)
   did_you_mean (>= 1.6.1)
   gli
   hacer
@@ -109,10 +114,11 @@ DEPENDENCIES
   mongo
   mongoid (>= 7.4.0)
   pry
-  rbender!
+  robotto!
   rspec
   telegram-bot-ruby
   typhoeus
+  zeitwerk
 
 BUNDLED WITH
    2.4.1

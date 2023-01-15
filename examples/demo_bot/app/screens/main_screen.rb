@@ -1,32 +1,26 @@
-screen :main_screen do
+# frozen_string_literal: true
+
+class MainScreen < BotScreen
   keyboard do
-    make_response "Sample response" #response are required
-    button :btn_1, "Btn1" do
-      # do something
+    set_response 'Hello!' #response are required
+    button :btn_1, 'Button 1' do
+      send_message 'You have pressed Button 1'
     end
 
-    button :btn_2, "Btn2" do
-      # do something
+    button :btn_2, 'Button 3' do
+      send_message 'You have pressed Button 2'
+    end
+
+    button :btn_3, 'Button 3' do
+      send_message 'You have pressed Button 2'
     end
 
     line :btn_1, :btn_2
-    # - - - - - - -
-    # Init keyboard
-    # - - - - - - -
+    line :btn_3
   end
-
-
-  keyboard_inline :kb_inline do
-    # - - - - - -
-    # Init inline keyboard
-    # - - - - - -
-  end
-
 
   text do |text|
-    # - - - - - - - - - - - -
-    # Process user's message
-    # - - - - - - - - - - - -
+    send_message "You just typed:\n#{text}"
   end
 
   after do

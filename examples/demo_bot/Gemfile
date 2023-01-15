@@ -1,4 +1,4 @@
-gem 'rbender', path: '~/Project/RBender'
+gem 'robotto', path: '~/Project/Robotto'
 gem 'telegram-bot-ruby'
 gem 'colorize'
 gem 'mongo'
