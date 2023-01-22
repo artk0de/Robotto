@@ -8,6 +8,7 @@ gem 'mongo'
 gem 'rspec'
 gem 'typhoeus'
 gem 'irb', require: false
+gem 'ice_nine'
 gem 'activesupport', require: false
 gem 'mongoid', '>= 7.4.0'
 gem 'did_you_mean', '>= 1.6.1'

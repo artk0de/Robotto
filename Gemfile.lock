@@ -110,6 +110,7 @@ DEPENDENCIES
   did_you_mean (>= 1.6.1)
   gli
   hacer
+  ice_nine
   irb
   mongo
   mongoid (>= 7.4.0)

@@ -12,16 +12,6 @@ module Robotto
       def initialize
         @states = {}
         @global_state = nil
-        @modules_block
-      end
-
-      def modules(&modules_block)
-        @modules_block = modules_block
-      end
-
-      # Runs a bot server.
-      def run!
-
       end
 
       # Sets configuration for bor on launch.
@@ -64,8 +54,6 @@ module Robotto
 
         @global_state = block
       end
-
-      private
 
       attr_accessor :message, :chat_id
 

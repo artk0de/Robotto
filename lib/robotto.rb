@@ -1,15 +1,20 @@
 # frozen_string_literal: true
 
-require 'active_support/core_ext/object'
+require 'active_support/core_ext/date_time'
 require 'active_support/core_ext/hash'
+require 'active_support/core_ext/module/delegation'
+require 'active_support/core_ext/object'
 require 'active_support/concern'
 require 'colorize'
 require 'concurrent-edge'
+require 'json'
 require 'mongo'
 require 'singleton'
 require 'telegram/bot'
 require 'yaml'
 require 'zeitwerk'
+
+require 'pry'
 
 loader = Zeitwerk::Loader.for_gem
 loader.setup # ready!
@@ -57,4 +62,3 @@ end
 
 loader.inflector.inflect("allowed_hooks" => "ALLOWED_HOOKS")
 loader.eager_load # optionally
-

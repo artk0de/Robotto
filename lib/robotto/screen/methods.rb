@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 module Robotto
   class Screen
     class Methods
       include Robotto::Support::ApiArgumentsAutoFiller
-
-      TELEGRAM_FILE_URL = 'https://api.telegram.org/file/bot'.freeze
+      TELEGRAM_FILE_URL = 'https://api.telegram.org/file/bot'
 
       attr_reader :api, :session
 
