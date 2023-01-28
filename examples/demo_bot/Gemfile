@@ -1,0 +1,9 @@
+gem 'robotto', path: '~/Project/Robotto'
+gem 'telegram-bot-ruby'
+gem 'colorize'
+gem 'mongo'
+gem 'typhoeus'
+# gem 'terminfo', github: 'genki/ruby-terminfo'
+
+# Put your gems used in bot here
+

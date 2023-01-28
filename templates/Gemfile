@@ -1,8 +1,0 @@
-gem 'rbender'
-gem 'telegram-bot-ruby'
-gem 'colorize'
-gem 'mongo'
-gem 'faraday'
-
-# Put your gems used in bot here
-

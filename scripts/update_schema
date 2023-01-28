@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require 'robotto'
+
+Dir.chdir('boilerplates')
+Robotto::Support::TelegramBotApiSchema.new.update!
+puts "Schema updated!".green
+puts Robotto::Support::TelegramBotApiSchema.print_schema_version

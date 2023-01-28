@@ -1,9 +1,9 @@
-# RBender [![Code Climate](https://codeclimate.com/github/art2rik/rbender/badges/gpa.svg)](https://codeclimate.com/github/art2rik/rbender)
-**RBender** is a DSL-specified framework to create bots for Telegram platform. Framework are developed to be maximally comfortable and intuitive for developers and proposes ultimate tools for bot creation.
+# Robotto [![Code Climate](https://codeclimate.com/github/art2rik/robotto/badges/gpa.svg)](https://codeclimate.com/github/art2rik/robotto)
+**Robotto** is a DSL-specified framework to create bots for Telegram platform. Framework are developed to be maximally comfortable and intuitive for developers and proposes ultimate tools for bot creation.
 
-![](https://github.com/art2rik/rbender/blob/master/img/rbender.png "Logo")
+![](https://github.com/art2rik/robotto/blob/master/img/robotto.png "Logo")
 ## Current gem version
-[![Gem Version](https://badge.fury.io/rb/rbender.svg)](https://badge.fury.io/rb/rbender)
+[![Gem Version](https://badge.fury.io/rb/robotto.svg)](https://badge.fury.io/rb/robotto)
 
 ## Features
 * Domain Specific Language based
@@ -26,25 +26,25 @@ To use this framework you need MongoDB installed. Please [visit MongoDB website]
 
 ## Install
 ```bash
-~$ gem install rbender
+~$ gem install robotto
 ```
 
 ## Usage
 
 To create new project type in terminal:
 ```bash
-~$ rbender new DemoBot
+~$ robotto new DemoBot
 ```
 Then new project with templates will be created. 
 
 To run your bot:
 ```bash
 ~$ cd DemoBot
-~/DemoBot$ rbender start
+~/DemoBot$ robotto start
 ```
 ## FSM intro
 
-The *Rbender* framework based on [Final State Machine](https://en.wikipedia.org/wiki/Finite-state_machine) model. Every state a represents one set of actions, which user could do while in state. The main idea of *RBender* are describing states and their's inner structure.
+The *Rbender* framework based on [Final State Machine](https://en.wikipedia.org/wiki/Finite-state_machine) model. Every state a represents one set of actions, which user could do while in state. The main idea of *Robotto* are describing states and their's inner structure.
 
 Every state can include:
 * Keyboard
@@ -73,11 +73,11 @@ end
 ```
 User's state before execution:
 
-![](https://github.com/art2rik/rbender/blob/master/img/fsm1.png "Before")
+![](https://github.com/art2rik/robotto/blob/master/img/fsm1.png "Before")
 
 User's state after execution:
 
-![](https://github.com/art2rik/rbender/blob/master/img/fsm2.png "After")
+![](https://github.com/art2rik/robotto/blob/master/img/fsm2.png "After")
 
 Beside this, there are can be **global** state where you can define helper methods and command hooks.
 
@@ -230,8 +230,8 @@ state :state_main do
     end
     
     button_link(:btn_url, 
-                "RBender homepage",
-                https://github.com/art2rik/RBender)
+                "Robotto homepage",
+                https://github.com/art2rik/Robotto)
                 
     add_line(:btn_hello)
     add_line(:btn_url)
@@ -277,13 +277,14 @@ YourModule.set_api(api)
 YourModule.set_mongo(mongo)
 end
 ```
-RBender use [telegram-bot-ruby](https://github.com/atipugin/telegram-bot-ruby) api driver and [MongoDB ruby](https://github.com/mongodb/mongo-ruby-driver) driver. Also you can get access to MongoDB driver like this:
+Robotto use [telegram-bot-ruby](https://github.com/atipugin/telegram-bot-ruby) api driver and [MongoDB ruby](https://github.com/mongodb/mongo-ruby-driver) driver. Also you can get access to MongoDB driver like this:
+
 ```ruby
-RBender::MongoClient.client
+Robotto::Mongo.client
 ```
 ## Download/ Upload 
 ## Methods
-### RBender methods
+### Robotto methods
 #### General methods
 | Method name| Arguments | Description|
 |------------|------------|------------|
@@ -353,7 +354,7 @@ Used inside keyboard_inline block.
 
 
 ### API methods
- RBender supports all avalaible [Telegram Bot API methods](https://core.telegram.org/bots/api#available-methods). 
+ Robotto supports all avalaible [Telegram Bot API methods](https://core.telegram.org/bots/api#available-methods). 
  But there are some litlle differences:
  * There are not necessary to specify user_id, you're always work with concrette user
  * Use *snake_case* instead CamelCase
@@ -408,14 +409,14 @@ end
 ## Examples
 
 # Documentation
-For detailed documentation [please visit our wiki](https://github.com/art2rik/RBender/wiki).
+For detailed documentation [please visit our wiki](https://github.com/art2rik/Robotto/wiki).
 
-# RBender based projects
-*RBender* widely used for e-commerce bot creation. There are at least one professional team, which successful integrated *RBender* into their work and uses the framework to create commercial bots ([Anybots team](https://t.me/anybots), Telegram: [@spiritized](https://telegram.me/spiritized)). Also, *RBender* is used for [inner-communication bots inside Innopolis city (Russia)](https://hightech.fm/2017/04/01/innopolis_bots).
+# Robotto based projects
+*Robotto* widely used for e-commerce bot creation. There are at least one professional team, which successful integrated *Robotto* into their work and uses the framework to create commercial bots ([Anybots team](https://t.me/anybots), Telegram: [@spiritized](https://telegram.me/spiritized)). Also, *Robotto* is used for [inner-communication bots inside Innopolis city (Russia)](https://hightech.fm/2017/04/01/innopolis_bots).
 ## Bot examples
 * [@HighTechFmBot](https://telegram.me/HighTechFmBot): [HighTech.FM](https://hightech.fm) media journal bot
 * [@FintechRankingbot](https://telegram.me/FintechRankingbot): [FintechRanking](https://fintechranking.com) news bot
 * [@icecakemoscowbot](https://telegram.me/icecakemoscowbot): Food delievery bot
 
 ## Badge for developers
-![](https://github.com/art2rik/rbender/blob/master/img/madewithrbender.png "Stamp")
+![](https://github.com/art2rik/robotto/blob/master/img/madewithrobotto.png "Stamp")

@@ -1,0 +1,9 @@
+---
+title: demo_bot
+dev:
+  token: 5913511786:AAHOs_thFfSzaCgAC_fxJ86iig8Wul3byf4
+  log_error: true
+  log_user: false
+  mongo: mongodb://localhost:27017
+prod:
+  token: "<<insert_your_token_here>>"

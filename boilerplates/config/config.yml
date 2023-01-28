@@ -1,0 +1,11 @@
+---
+title: SampleName
+
+dev:
+  token: <<insert_your_token_here>>
+  log_error: true
+  log_user: false
+  mongo: mongodb://localhost:27017
+
+prod:
+  token: <<insert_your_token_here>>
